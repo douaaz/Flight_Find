@@ -384,7 +384,7 @@
                         <datalist id="list1">
                             <option>any</option>
                             {% for i in flight_data %}
-                                <option>{{ i["departure_airport"] }}</option>
+                                <option>{{ i[2] }}</option>
                             {% endfor %}
                         </datalist>
                     </li>
@@ -393,7 +393,7 @@
                         <datalist id="list2">
                             <option>any</option>
                             {% for i in flight_data %}
-                                <option>{{ i["arrival_airport"] }}</option>
+                                <option>{{ i[4] }}</option>
                             {% endfor %}
                         </datalist>
                     </li>
@@ -402,7 +402,7 @@
                         <datalist id="list4">
                             <option>any</option>
                             {% for i in flight_data %}
-                                <option>{{ i["flight_num"] }}</option>
+                                <option>{{ i[1] }}</option>
                             {% endfor %}
                         </datalist>
                     </li>
@@ -414,7 +414,7 @@
                     </li>
                     <li>
                         <select id="status" class="Status_input">
-                            <option>Upcoming</option>
+                            <option>Scheduled</option>
                             <option>In-progress</option>
                             <option>Delayed</option>
                             <option>Cancelled</option>

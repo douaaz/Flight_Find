@@ -103,48 +103,48 @@
         <ul>
             <li>
                 Airline Name
-                <p>{{ flight_info["airline_name"] }}</p>
+                <p>{{ flight_info[0] }}</p>
             </li>
             <li>
                 Flight Number
-                <p>{{ flight_info["flight_num"] }}</p>
+                <p>{{ flight_info[1] }}</p>
             </li>
             <li>
                 Departure Airport
-                <p>{{ flight_info["departure_airport"] }}</p>
+                <p>{{ flight_info[2] }}</p>
             </li>
             <li>
                 Departure Time
-                <p>{{ flight_info["departure_time"] }}</p>
+                <p>{{ flight_info[3] }}</p>
             </li>
             <li>
                 Arrival Airport
-                <p>{{ flight_info["arrival_airport"] }}</p>
+                <p>{{ flight_info[4] }}</p>
             </li>
             <li>
                 Arrival Time
-                <p>{{ flight_info["arrival_time"] }}</p>
+                <p>{{ flight_info[5] }}</p>
             </li>
             <li>
                 Price
-                <p>{{ flight_info["price"] }}</p>
+                <p>{{ flight_info[6] }}</p>
             </li>
             <li>
                 Status
-                <p>{{ flight_info["status"] }}</p>
+                <p>{{ flight_info[7] }}</p>
             </li>
             <li>
                 Number of Tickets Left
                 <p>{{ available_ticket_num }}</p>
             </li>
             <li>
-                <input type="text" name="cust_email" placeholder="Enter customer email" required="required">
+                <textarea name="cust_email" placeholder="Enter customer email" required="required"></textarea>
             </li>
             <li style="display: none">
-                <input type="text"  name="airline_name" value="{{ flight_info["airline_name"] }}">
+                <input type="text"  name="airline_name" value="{{ flight_info[0] }}">
             </li>
             <li style="display: none">
-                <input type="text"  name="flight_num" value="{{ flight_info["flight_num"] }}">
+                <input type="text"  name="flight_num" value="{{ flight_info[1] }}">
             </li>
             <li>
                 <button>Book Now!</button>

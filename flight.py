@@ -536,14 +536,9 @@ def customerPurchaseFlight():
             return "Bad Form"
 
         cursor = conn.cursor()
-        query = '''SELECT (airplane.seats - COUNT(ticket.ticket_id)) AS available_seats
-                                FROM ticket
-                                JOIN flight ON flight.flight_num = ticket.flight_num AND flight.airline_name = ticket.airline_name
-                                JOIN airplane ON airplane.airplane_id = flight.airplane_id  -- assuming there's an airplane_id linking flight and airplane
-                                WHERE ticket.airline_name = %s
-                                AND ticket.flight_num = %s
-                                AND ticket.ticket_id NOT IN (SELECT ticket_id FROM purchases)
-                                GROUP BY ticket.airline_name, ticket.flight_num, airplane.seats;'''
+        query = '''SELECT COUNT(ticket_id) ticket_num FROM ticket WHERE airline_name = %s
+                        AND flight_num = %s
+                        AND ticket_id NOT IN (SELECT ticket_id FROM purchases);'''
         cursor.execute(query, (airline_name, flight_num))
         available_ticket_num = cursor.fetchone()
         available_ticket_num = available_ticket_num[0]
@@ -632,11 +627,11 @@ def customerTrackSpending(chartID = "Customer_Track_Spending"):
 
         query = '''SELECT SUM(price) AS total FROM flight,purchases,ticket
                     WHERE purchases.customer_email = %s
-                    AND year(purchases.purchase_date) = %s
+                    AND year(purchases.purchase_date) = '2024'
                     AND purchases.ticket_id = ticket.ticket_id
                     AND (ticket.airline_name,ticket.flight_num) = (flight.airline_name,flight.flight_num)
                     '''
-        cursor.execute(query, (email, year))
+        cursor.execute(query, (email))
         annual_spending = cursor.fetchone()[0]
         if annual_spending == None:
             annual_spending = 0
@@ -861,7 +856,7 @@ def baSearchFlight():
         query = '''SELECT airline_name,flight_num,departure_airport, departure_time,
                     arrival_airport, arrival_time, price, status
                     FROM flight 
-                    WHERE status = "Upcoming"
+                    WHERE status = "Scheduled"
                     '''
 
         forbidden = ["'", ";", "--", '"']
@@ -893,12 +888,12 @@ def baSearchFlight():
 
         res = []
         for e in data:
-            record = [str(e[i]) for i in e]
+            record = [str(item) for item in e]
             query = '''SELECT COUNT(ticket_id) ticket_num FROM ticket WHERE airline_name = %s
                         AND flight_num = %s
                         AND ticket_id NOT IN (SELECT ticket_id FROM purchases);'''
             cursor.execute(query, (record[0], record[1]))
-            ticket_num = cursor.fetchone()["ticket_num"]
+            ticket_num = cursor.fetchone()[0]
             if ticket_num > 0:
                 record.append(0)
             else:
@@ -963,7 +958,7 @@ def baPurchaseProcess():
         #get booking agent id
         query = '''SELECT booking_agent_id FROM booking_agent WHERE email = %s;'''
         cursor.execute(query,email)
-        ba_id = cursor.fetchone()["booking_agent_id"]
+        ba_id = cursor.fetchone()[0]
 
         #check if input customer_email is valid
         query = "SELECT * FROM customer WHERE email = %s"
@@ -975,7 +970,7 @@ def baPurchaseProcess():
 
 
         #check if input flight_num is valid
-        cursor.execute("SELECT * FROM flight WHERE airline_name = %s AND flight_num = %s AND status = 'Upcoming';",(airline_name,flight_num))
+        cursor.execute("SELECT * FROM flight WHERE airline_name = %s AND flight_num = %s AND status = 'Scheduled';",(airline_name,flight_num))
         d = cursor.fetchall()
         if len(d) == 0:
             return "Bad form"
@@ -1027,7 +1022,7 @@ def baViewCommission():
         year_data = cursor.fetchall()
         year_option = []
         for e in year_data:
-            year_option.append(e["year"])
+            year_option.append(e[0])
 
         #get  date
         date_mark = (datetime.datetime.now()-datetime.timedelta(days=30)).strftime("%Y-%m-%d")
@@ -1040,7 +1035,7 @@ def baViewCommission():
                     AND purchases.purchase_date > %s'''
 
         cursor.execute(query,(email,date_mark))
-        total_commission = cursor.fetchone()["total_commission"]
+        total_commission = cursor.fetchone()[0]
         if not total_commission:
             total_commission = 0
         else:
@@ -1051,7 +1046,7 @@ def baViewCommission():
                     WHERE booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = %s)
                     AND  purchase_date > %s;'''
         cursor.execute(query,(email,date_mark))
-        sold_ticket_num = cursor.fetchone()["sold_ticket_num"]
+        sold_ticket_num = cursor.fetchone()[0]
         cursor.close()
         if sold_ticket_num != 0:
             commission_average = total_commission/sold_ticket_num
@@ -1086,7 +1081,7 @@ def baProcessCommission():
                     AND  purchases.purchase_date >= "%s"
                     AND purchases.purchase_date <= "%s" ;''' %(email,start_date,end_date)
         cursor.execute(query)
-        total_commission = cursor.fetchone()["total_commission"]
+        total_commission = cursor.fetchone()[0]
         if not total_commission:
             total_commission = 0
         else:
@@ -1096,7 +1091,7 @@ def baProcessCommission():
                     AND  purchase_date >= "%s"
                     AND purchase_date <= "%s";''' %(email,start_date,end_date)
         cursor.execute(query)
-        sold_ticket_num = cursor.fetchone()["sold_ticket_num"]
+        sold_ticket_num = cursor.fetchone()[0]
         cursor.close()
         if sold_ticket_num != 0:
             commission_average = total_commission/sold_ticket_num
@@ -1141,9 +1136,9 @@ def baTopCustomers():
         c1xAxis_categories_email = []
         c1xAxis_categories_name = []
         for e in cust_info:
-            top5_tickets.append(e["ticket_num"])
-            c1xAxis_categories_email.append(e["customer_email"])
-            c1xAxis_categories_name.append(e["name"])
+            top5_tickets.append(e[2])
+            c1xAxis_categories_email.append(e[0])
+            c1xAxis_categories_name.append(e[1])
 
         # get top 5 customer by total commission
         query = '''SELECT customer_email, name, SUM(price*0.1) total_commission
@@ -1164,9 +1159,9 @@ def baTopCustomers():
         cust_info = cursor.fetchall()
         cursor.close()
         for e in cust_info:
-            top5_commission.append(float(e["total_commission"]))
-            c2xAxis_categories_email.append(e["customer_email"])
-            c2xAxis_categories_name.append(e["name"])
+            top5_commission.append(float(e[2]))
+            c2xAxis_categories_email.append(e[0])
+            c2xAxis_categories_name.append(e[1])
 
 
         return render_template("baTopCustomers.html", email=email, top5_tickets = top5_tickets,
@@ -1207,24 +1202,24 @@ def baViewFlight():
         airline_name_option = []
         flight_num_option = []
         for e in booked_flight_data:
-            temp = e
-            temp["flight_num"] = int(str(e["flight_num"]))
-            temp["price"] = int(str(e["price"]))
-            temp["departure_time"] = str(e["departure_time"])
-            temp["arrival_time"] = str(e["arrival_time"])
+            temp = list(e)
+            temp[1] = int(e[1])
+            temp[6] = int(e[6])
+            temp[3] = str(e[3])
+            temp[5] = str(e[5])
             result.append(temp)
 
-            if not (e["departure_airport"] in departure_airport_option):
-                departure_airport_option.append(e["departure_airport"])
+            if not (e[2] in departure_airport_option):
+                departure_airport_option.append(e[2])
 
-            if not (e["arrival_airport"] in arrival_airport_option):
-                arrival_airport_option.append(e["arrival_airport"])
+            if not (e[4] in arrival_airport_option):
+                arrival_airport_option.append(e[4])
 
-            if not (e["airline_name"] in airline_name_option):
-                airline_name_option.append(e["airline_name"])
+            if not (e[0] in airline_name_option):
+                airline_name_option.append(e[0])
 
-            if not (e["flight_num"] in flight_num_option):
-                flight_num_option.append(e["flight_num"])
+            if not (e[1] in flight_num_option):
+                flight_num_option.append(e[1])
 
         return render_template("baViewFlight.html",
                                departure_airport_option=departure_airport_option,
@@ -1273,9 +1268,9 @@ def staffHomePage():
         flight_data = cursor.fetchall()
         result = []
         for e in flight_data:
-            temp = e
-            temp[1] = int(str(e[1]))
-            temp[6] = int(str(e[6]))
+            temp = list(e)
+            temp[1] = int(e[1])
+            temp[6] = int(e[6])
             temp[3] = str(e[3])
             temp[5] = str(e[5])
             result.append(temp)
@@ -1302,7 +1297,7 @@ def staffChangeFlight():
         except:
             return "Bad form"
 
-        if status not in ["Upcoming","Delayed","In-progress","Cancelled","Canceled"]:
+        if status not in ["Scheduled","Delayed","In-progress","Cancelled","Canceled"]:
             return "Bad form"
 
         cursor = conn.cursor()
@@ -1353,7 +1348,7 @@ def staffAddAirport():
         cursor.execute(query)
         d = cursor.fetchall()
         for e in d:
-            if e["airport_name"] == airport_name:
+            if e[0] == airport_name:
                 return jsonify({"data":"Error: Airport name already exists!"})
         query = "INSERT INTO airport VALUES(%s,%s);"
         cursor.execute(query,(airport_name,airport_city))
@@ -1387,7 +1382,7 @@ def staffAddAirplane():
         cursor.execute(query)
         d = cursor.fetchall()
         for e in d:
-            if e["airline_name"] == airline_name and int(e["airplane_id"]) == int(airplane_id):
+            if e[0] == airline_name and int(e[1]) == int(airplane_id):
                 return jsonify({"data":"Error: airplane_id duplicate"})
 
         query = "INSERT INTO airplane VALUES(%s,%s,%s);"
