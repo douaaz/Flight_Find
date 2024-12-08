@@ -1,0 +1,87 @@
+{% extends "purchaseConfirmationLayout.html" %}
+{% block style_js %}
+{% endblock %}
+
+{#don't forget to delete the email!!!#}
+{% block href_home %}{{ url_for("customerHomePage") }}{% endblock %}
+
+{% block profile_button %}
+    {{ email }}
+{% endblock %}
+
+{% block innerlist %}
+    <ul>
+        <li><a href="{{ url_for('customerPurchaseFlight') }}">Purchase Tickets</a></li>
+        <li><a href="#"{#{{ url_for('customerTrackSpending') }}#}>Track my Spending</a></li>
+        <li><a href="#">View my Flights</a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class='main'>
+    <a href="{{ url_for("customerHomePage") }}">back</a>
+    <h1>Confirm Your Booking</h1>
+    <form action="/customerPurchaseSuccessPage" method="post">
+        <ul>
+            <li>
+                Airline Name
+                <p>{{ flight_info[0] }}</p>
+            </li>
+            <li>
+                Flight Number
+                <p>{{ flight_info[1] }}</p>
+            </li>
+            <li>
+                Departure Airport
+                <p>{{ flight_info[2] }}</p>
+            </li>
+            <li>
+                Departure Time
+                <p>{{ flight_info[3] }}</p>
+            </li>
+            <li>
+                Arrival Airport
+                <p>{{ flight_info[4] }}</p>
+            </li>
+            <li>
+                Arrival Time
+                <p>{{ flight_info[5] }}</p>
+            </li>
+            <li>
+                Price
+                <p>{{ flight_info[6] }}</p>
+            </li>
+            <li>
+                Status
+                <p>{{ flight_info[7] }}</p>
+            </li>
+            <li>
+                Number of Tickets Left
+                <p>{{ available_ticket_num }}</p>
+            </li>
+            <li>
+                <select name="num_of_ticket">
+                    {% for i in range(1, available_ticket_num + 1) %}
+                    <option>
+                        {{ i }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </li>
+            <li class="class1">
+                <input type="text"  name="airline_name" value="{{ flight_info[0] }}">
+            </li>
+            <li class="class1">
+                <input type="text"  name="flight_num" value="{{ flight_info[1"] }}">
+            </li>
+            <li>
+                <button>Book Now!</button>
+            </li>
+        </ul>
+    </form>
+    {% if not purchase_success %}
+    <p>{{ error }}</p>
+    {% endif %}
+</div>
+
+{% endblock %}

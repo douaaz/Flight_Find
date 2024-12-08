@@ -1,0 +1,20 @@
+{% extends "purchaseSuccessLayout.html" %}
+{% block style_js %}
+{% endblock %}
+
+{#don't forget to delete the email!!!#}
+{% block href_home %}{{ url_for("baHomePage")}}{% endblock %}
+
+{% block content %}
+<div class='main'>
+<p>{{result}}</p>
+
+    <a href="{{ url_for("baHomePage") }}">
+        back to home
+    </a>
+    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}">
+        logout
+    </a>
+</div>
+
+{% endblock %}

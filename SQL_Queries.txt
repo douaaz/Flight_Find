@@ -1,0 +1,301 @@
+----------------------------- Public Use Case ------------------------------------------
+
+    #get public flight search result
+    SELECT airline_name,flight_num,departure_airport,departure_time,
+                arrival_airport,arrival_time,price,status FROM flight 
+
+    #plus a series of WHERE, AND statements if user enters a constraint
+
+
+
+------------------------------------ Customer Use Case----------------------------------
+
+        #get upcoming flights
+        SELECT airline_name,flight_num,departure_airport, departure_time,
+                    arrival_airport, arrival_time, price, status
+                    FROM flight 
+                    WHERE status = "Upcoming";
+                    
+
+
+
+        #check if there is still ticket left
+        SELECT ticket_id FROM ticket WHERE airline_name = %s
+                            AND flight_num = %s
+                            AND ticket_id not in (SELECT ticket_id FROM purchases);
+
+        #get flight info about the ticket
+        SELECT 
+	airline_name,flight_num,departure_airport,departure_time,arrival_airport,arrival_time,price,status  
+	FROM flight 
+	WHERE airline_name = %s AND flight_num = %s;"
+        
+        # customer purchase processing. insert when there is still tickets left at the moment of purchase
+        INSERT INTO purchases (ticket_id,customer_email,booking_agent_id,purchase_date) 
+                        SELECT ticket_id, '%s', %s, '%s' FROM ticket
+                        WHERE airline_name = '%s' AND flight_num = %d
+                        AND ticket_id NOT IN (SELECT ticket_id FROM purchases)
+                        LIMIT 1;
+	
+
+	# Customer trackspending: total spending of last year
+	SELECT SUM(price) AS total FROM flight,purchases,ticket
+                    WHERE purchases.customer_email = %s
+                    AND year(purchases.purchase_date) = %s
+                    AND purchases.ticket_id = ticket.ticket_id
+                    AND (ticket.airline_name,ticket.flight_num) = (flight.airline_name,flight.flight_num)
+                    
+
+	# Customer trackspending: total spending of last month
+	SELECT SUM(price) AS total FROM flight,purchases,ticket
+                                    WHERE purchases.customer_email = %s
+                                    AND year(purchases.purchase_date) = %s
+                                    AND month(purchases.purchase_date) = %s
+                                    AND purchases.ticket_id = ticket.ticket_id
+                                    AND (ticket.airline_name,ticket.flight_num) = (flight.airline_name,flight.flight_num)
+                                    
+
+        #get customer booked flight records
+        SELECT f.airline_name,f.flight_num,f.departure_airport,f.departure_time,
+                    f.arrival_airport,f.arrival_time,f.price,f.status
+                    FROM flight AS f, ticket AS t, purchases AS p
+                    WHERE p.customer_email = %s
+                    AND p.ticket_id = t.ticket_id
+                    AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num);
+
+
+------------------------------ Booking Agent Use Case -----------------------------------------
+
+	#get upcoming flights
+	SELECT airline_name,flight_num,departure_airport, departure_time,
+                    arrival_airport, arrival_time, price, status
+                    FROM flight 
+                    WHERE status = "Upcoming"
+                   
+	#get the number of available tickets 
+	query = '''SELECT COUNT(ticket_id) ticket_num FROM ticket WHERE airline_name = %s
+                        AND flight_num = %s
+                        AND ticket_id NOT IN (SELECT ticket_id FROM purchases);'''
+
+	#check if there is still available ticket left for a flight
+	SELECT ticket_id FROM ticket WHERE airline_name = %s
+                            AND flight_num = %s
+                            AND ticket_id not in (SELECT ticket_id FROM purchases);
+
+	#insert purchase record
+	INSERT INTO purchases (ticket_id,customer_email,booking_agent_id,purchase_date) 
+                                    SELECT ticket_id, '%s', %s, '%s' FROM ticket
+                                    WHERE airline_name = '%s' AND flight_num = %s
+                                    AND ticket_id NOT IN (SELECT ticket_id FROM purchases)
+                                    LIMIT 1;
+
+        #get total_commission
+        SELECT SUM(price*0.1) AS total_commission FROM ticket, purchases, flight
+                    WHERE ticket.ticket_id = purchases.ticket_id
+                    AND (ticket.airline_name, ticket.flight_num) = (flight.airline_name, flight.flight_num)
+                    AND purchases.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = %s)
+                    AND purchases.purchase_date > %s
+
+        #get total ticket num sold
+        SELECT COUNT(ticket_id) sold_ticket_num FROM purchases 
+                    WHERE booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = %s)
+                    AND  purchase_date > %s;
+
+	#get commission within a specified range
+	SELECT SUM(price*0.1) AS total_commission FROM ticket, purchases, flight
+                    WHERE ticket.ticket_id = purchases.ticket_id
+                    AND (ticket.airline_name, ticket.flight_num) = (flight.airline_name, flight.flight_num)
+                    AND purchases.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '%s')
+                    AND  purchases.purchase_date >= "%s"
+                    AND purchases.purchase_date <= "%s" ;
+
+	#get top 5 customers by ticket purchased
+        	SELECT customer_email, name, COUNT(ticket_id) AS ticket_num
+                    FROM purchases, customer
+                    WHERE customer.email = purchases.customer_email
+                    AND booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = %s)
+                    AND purchases.purchase_date >= %s
+                    AND purchases.purchase_date < %s
+                    GROUP BY customer_email
+                    ORDER BY ticket_num DESC
+                    LIMIT 5;
+
+
+	# get top 5 customer by total commission
+        	SELECT customer_email, name, SUM(price*0.1) total_commission
+                    FROM purchases, customer, flight, ticket
+                    WHERE purchases.booking_agent_id = (SELECT booking_agent_id FROM booking_agent 
+                                                            WHERE email = %s)
+                    AND customer.email = purchases.customer_email
+                    AND purchases.ticket_id = ticket.ticket_id
+                    AND (ticket.airline_name, ticket.flight_num) = (flight.airline_name, flight.flight_num)
+                    GROUP BY customer_email
+                    ORDER BY total_commission DESC
+                    LIMIT 5;
+
+
+	#get  booked flights
+	SELECT flight.airline_name,flight.flight_num,departure_airport,
+                    departure_time,arrival_airport,arrival_time,price,status, customer_email
+                    FROM flight, ticket, purchases
+                    WHERE purchases.booking_agent_id = (SELECT booking_agent_id FROM
+                                                       booking_agent WHERE email = %s)
+
+                    AND purchases.ticket_id = ticket.ticket_id
+                    AND (ticket.airline_name,ticket.flight_num) = (flight.airline_name,
+                                                                  flight.flight_num);
+
+
+--------------------------------- Airline Staff Use Case -------------------------------------
+        #get flight info 
+        SELECT airline_name,flight_num,departure_airport,departure_time,
+                    arrival_airport,arrival_time,price,status 
+                    FROM flight 
+                    WHERE airline_name = %s;
+
+	#airline staff change flight status
+	UPDATE flight SET status = %s
+                    WHERE airline_name = %s
+                    AND flight_num = %s ;
+
+	#airline staff add airport
+	INSERT INTO airport VALUES(%s,%s);
+
+	#airline staff add airplane
+	INSERT INTO airplane VALUES(%s,%s,%s);
+
+
+	#airline staff create flight
+	INSERT INTO flight VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);
+
+
+	#get top5 booking agents by tickets sold last month
+	SELECT b.email, COUNT(b.email) num_of_ticket
+                    FROM booking_agent b, ticket t, purchases p
+                    WHERE p.booking_agent_id = b.booking_agent_id
+                    AND p.ticket_id = t.ticket_id
+                    AND t.airline_name = %s
+                    AND MONTH(p.purchase_date) = %s
+                    AND YEAR(p.purchase_date) = %s
+                    GROUP BY b.email
+                    ORDER BY num_of_ticket DESC
+                    LIMIT 5;
+
+	# get top5 booking agents by tickets sold last year
+	SELECT b.email, COUNT(b.email) num_of_ticket
+                            FROM booking_agent b, ticket t, purchases p
+                            WHERE p.booking_agent_id = b.booking_agent_id
+                            AND p.ticket_id = t.ticket_id
+                            AND t.airline_name = %s
+                            AND YEAR(p.purchase_date) = %s
+                            GROUP BY b.email
+                            ORDER BY num_of_ticket DESC
+                            LIMIT 5;
+	
+	#get top5 booking agents by commission earned last year
+        	SELECT b.email, SUM(f.price*0.1) commission
+                        FROM flight f, purchases p, booking_agent b, ticket t
+                        WHERE b.booking_agent_id = p.booking_agent_id
+                        AND p.ticket_id = t.ticket_id
+                        AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
+                        AND YEAR(p.purchase_date) = %s
+                        AND t.airline_name = %s
+                        GROUP BY b.email
+                        ORDER BY commission DESC
+                        LIMIT 5;
+	
+	#find the most frequent customer
+	SELECT c.name,p.customer_email,COUNT(*) ticket_num
+                    FROM purchases p , ticket t,customer c
+                    WHERE p.ticket_id = t.ticket_id
+                    AND c.email = p.customer_email
+                    AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = %s)
+                    AND YEAR(p.purchase_date) = %s
+                    GROUP BY p.customer_email
+                    ORDER BY ticket_num DESC
+                    LIMIT 1;
+
+	#find the booked flights of a particular customer
+	SELECT distinct f.airline_name,f.flight_num,departure_airport,departure_time,
+                    arrival_airport,arrival_time,price,status 
+                    FROM flight f, ticket t, purchases p
+                    WHERE (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
+                    AND p.ticket_id = t.ticket_id
+                    AND p.customer_email = %s
+                    AND f.airline_name = (SELECT airline_name FROM airline_staff 
+                                          WHERE username = %s); 
+
+	#get top3 destinations of past year
+	SELECT airport_city, COUNT(*) traffic_num
+                            FROM airport a, flight f,ticket t
+                            WHERE a.airport_name = f.arrival_airport
+                            AND (f.airline_name, f.flight_num) = (t.airline_name,t.flight_num)
+                            AND f.status != "Cancelled"
+                            AND f.airline_name = %s
+                            AND year(f.arrival_time) = %s
+                            AND t.ticket_id in (SELECT ticket_id FROM purchases)
+                            GROUP BY airport_city
+                            ORDER BY traffic_num DESC
+                            LIMIT 3;
+	
+	#get top3 destinations of past six months
+	SELECT airport_city, COUNT(*) traffic_num
+                                    FROM airport a, flight f, ticket t
+                                    WHERE a.airport_name = f.arrival_airport
+                                    AND (f.airline_name, f.flight_num) = (t.airline_name, t.flight_num)
+                                    AND f.status != "Cancelled"
+                                    AND f.airline_name = %s
+                                    AND f.arrival_time < %s
+                                    AND f.arrival_time >= %s
+                                    AND t.ticket_id in (SELECT ticket_id FROM purchases)
+                                    GROUP BY airport_city
+                                    ORDER BY traffic_num DESC
+                                    LIMIT 3;
+
+	#get annually indirect revenue
+	SELECT SUM(f.price) annually_indirect
+                            FROM purchases p , ticket t, flight f
+                            WHERE p.ticket_id = t.ticket_id
+                            AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
+                            AND f.airline_name = %s
+                            AND p.booking_agent_id IS NOT NULL
+                            AND YEAR(p.purchase_date) = %s
+
+	#get annually direct revenue
+	SELECT SUM(f.price) annually_direct
+                                FROM purchases p , ticket t, flight f
+                                WHERE p.ticket_id = t.ticket_id
+                                AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
+                                AND f.airline_name = %s
+                                AND p.booking_agent_id IS NULL
+                                AND YEAR(p.purchase_date) = %s
+
+	#get monthly direct revenue
+	SELECT SUM(f.price) monthly_indirect
+                                    FROM purchases p , ticket t, flight f
+                                    WHERE p.ticket_id = t.ticket_id
+                                    AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
+                                    AND f.airline_name = %s
+                                    AND p.booking_agent_id IS NOT NULL
+                                    AND YEAR(p.purchase_date) = %s
+                                    AND MONTH(p.purchase_date) = %s;
+
+	# get monthly direct revenue
+        	SELECT SUM(f.price) monthly_direct
+                                            FROM purchases p , ticket t, flight f
+                                            WHERE p.ticket_id = t.ticket_id
+                                            AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
+                                            AND f.airline_name = %s
+                                            AND p.booking_agent_id IS NULL
+                                            AND YEAR(p.purchase_date) = %s
+                                            AND MONTH(p.purchase_date) = %s;
+
+	#get month-wise tickets sold num
+        	SELECT COUNT(t.ticket_id) total_ticket_num
+                    	FROM ticket t, purchases p
+                    	WHERE airline_name = (SELECT airline_name FROM airline_staff WHERE username = %s)
+                   	AND t.ticket_id = p.ticket_id
+                    	AND YEAR(p.purchase_date) = %s
+                    	AND MONTH(p.purchase_date) = %s;
+
+

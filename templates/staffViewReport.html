@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>{{ username }}'s Report</title>
+    <style>
+        .buttons ul{
+            list-style: none;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .buttons ul li{
+            padding: 10px 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        .buttons ul li a{
+            text-decoration: none;
+            padding: 10px 10px;
+            font-family: "Arial";
+            font-weight: bold;
+            color: black;
+        }
+        .buttons ul li a:hover{
+            background: #37b5ff;
+            color: white;
+        }
+        .title{
+            position: relative;
+            padding-top: 50px;
+            text-align: center;
+            font-family: "Arial";
+            font-size: 25px;
+            font-weight: bold;
+        }
+        .chart{
+            margin-top: 120px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sub{
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1000px;
+            font-family: "Arial";
+            font-weight: bold;
+        }
+        .top3_destinations{
+            background: #e7e7e7;
+        }
+        .top3_destinations ul{
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 20px;
+            width: 1000px;
+            list-style: none;
+        }
+        .top3_destinations ul span{
+            padding-right: 150px;
+        }
+        .top3_destinations li{
+            display: inline-block;
+            width: 255px;
+        }
+        .chart_list{
+            margin-left: auto;
+            margin-right: auto;
+            width: 600px;
+        }
+        .chart_list li{
+            display: inline-block;
+        }
+
+
+
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #2e4982;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+
+    </style>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="/static/js/staff_view_report_graph.js"></script>
+    <script src="/static/js/pie_chart.js"></script>
+</head>
+<body>
+    <div class="background">
+        <a href="{{ url_for("staffHomePage")}}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}" >logout</a>
+                </li>
+                <li>
+                    <p>{{ username }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="buttons">
+    <ul>
+        <li><a href="{{ url_for('staffHomePage') }}">Home</a></li>
+        <li><a href="{{ url_for('staffCreateFlight') }}">Create Flights</a></li>
+        <li><a href="{{ url_for('staffViewBA') }}">View Booking Agents</a></li>
+        <li><a href="{{ url_for('staffViewCustomers') }}">View Customers</a></li>
+        <li><a href="{{ url_for('staffViewReport') }}">View Report</a></li>
+    </ul>
+</div>
+    <div class="main">
+        <p class="title"> Report for {{ airline_name }}</p>
+        <p class="sub">Total Tickets Sold Last Year: {{ total_ticket_num }}</p>
+        <p class="sub">Total Revenue Earned: {{ annually_indirect + annually_direct }}</p>
+    </div>
+    <div class="top3_destinations">
+        <p class="sub">Top Three Destinations in the Past 3 Months:</p>
+        <ul>
+            <p>
+                <span>Airport Name</span>
+                <span>Flights to the Top Destinations</span>
+            </p>
+            {% if top3_destinations_m | length > 0 %}
+                {% for i in range(top3_destinations_m | length) %}
+                <li>#{{ i + 1 }}: {{ top3_destinations_m[i]["airport_city"] }}</li>
+                {% endfor %}
+            {% else %}
+                <li>No Data Found!</li>
+            {% endif %}
+            {% if top3_destinations_m | length > 0 %}
+                {% for i in range(top3_destinations_m | length) %}
+                <li>#{{ i + 1 }}: {{ top3_destinations_m[i]["traffic_num"] }}</li>
+                {% endfor %}
+            {% else %}
+                <li>No Data Found!</li>
+            {% endif %}
+        </ul>
+        <p class="sub">Top Three Destinations in the Past Year:</p>
+        <ul>
+            <p>
+                <span>Airport Name</span>
+                <span>Flights to the Top Destinations</span>
+            </p>
+            {% if top3_destinations_y | length > 0 %}
+                {% for i in range(top3_destinations_y | length) %}
+                <li>#{{ i + 1 }}: {{ top3_destinations_y[i]["airport_city"] }}</li>
+                {% endfor %}
+            {% else %}
+                <li>No Data Found!</li>
+            {% endif %}
+            {% if top3_destinations_y | length > 0 %}
+                {% for i in range(top3_destinations_y | length) %}
+                <li>#{{ i + 1 }}: {{ top3_destinations_y[i]["traffic_num"] }}</li>
+                {% endfor %}
+            {% else %}
+                <li>No Data Found!</li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="chart" id="Report" style="height: 400px; width: 50%"></div>
+    {#Revenue Comparison Chart#}
+    <ul class="chart_list">
+        <div id="revenue_comparison_y" style="height: 600px; width: 600px"></div>
+        <div id="revenue_comparison_m" style="height: 600px; width: 600px"></div>
+    </ul>
+
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+
+
+    <script>
+        //chat1 info
+        var chart1_id = "Report";
+        var chart1_type = "column";
+        var c1series1_name = "Tickets sold in the past year";
+        var c1series1_data = {{ monthly_ticket_breakdown|safe }};
+        var c1title = "Financial Report";
+        var c1xAxis_categories = {{ xAxis_categories|safe }};
+        var c1yAxis_title_text = "Num. of Tickets";
+    </script>
+    {#Annual Rvenue Comparison#}
+    <script>
+        var chart_id_y = "revenue_comparison_y";
+        var chart_id_m = "revenue_comparison_m";
+        var chart_type = "pie";
+        var title1 = "Revenue comparison in the past year";
+        var title2 = "Revenue comparison in the past month";
+        var annually_indirect = {{ annually_indirect - monthly_indirect }};
+        var monthly_indirect = {{ monthly_indirect }};
+        var annually_direct = {{ annually_direct - monthly_direct }};
+        var monthly_direct = {{ monthly_direct }};
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    {% block style %}{% endblock %}
+    <style>
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #023a45;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+
+    </style>
+    <title>Register Page</title>
+</head>
+
+
+<body>
+<div class="background">
+    <a href="{{url_for("indexPage")}}"><img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" ></a>
+    <ul class="text">
+        <li>
+            <a href="{{ url_for("staffRegisterPage") }}">Airline Staff</a>
+        </li>
+
+        <li>
+            <a href="{{ url_for("baRegisterPage") }}">Booking Agent</a>
+        </li>
+
+        <li>
+            <a href="{{ url_for("customerRegisterPage") }}">Customer</a>
+        </li>
+    </ul>
+</div>
+<div class="imgoption2">
+    <div class="registerform">
+        <form class="registerlayout" action="/register" method="post">
+            {% block info %}{% endblock %}
+            <button name="button" value="confirm register">Confirm</button>
+        </form>
+        <br>
+        <label>Got an account? <a href="{{ url_for("customerLoginPage") }}">Login Now!</a></label>
+        <br><br><br>
+    </div>
+</div>
+<div class="footer">
+    <p>Databases Project, Douaa Zouhir</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <title>Purchase Tickets</title>
+    {% block style_js %}
+    {% endblock %}
+</head>
+<body>
+    <div class="background">
+        <a href="{% block href_home %}{% endblock %}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}" >logout</a>
+                </li>
+                <li>
+                    <a>{% block profile_button %}{% endblock %}</a>
+                    {% block innerlist %}{% endblock %}
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+
+</body>
+</html>

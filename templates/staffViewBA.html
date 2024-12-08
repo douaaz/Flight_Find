@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>{{ username }}'s Top 5 Booking Agents</title>
+    <style>
+        .buttons ul{
+            list-style: none;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .buttons ul li{
+            padding: 10px 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        .buttons ul li a{
+            text-decoration: none;
+            padding: 10px 10px;
+            font-family: "Arial";
+            font-weight: bold;
+            color: black;
+        }
+        .buttons ul li a:hover{
+            background: #37b5ff;
+            color: white;
+        }
+        .title{
+            position: relative;
+            top: 50px;
+            text-align: center;
+            font-family: "Arial";
+            font-size: 25px;
+            font-weight: bold;
+        }
+        .chart{
+            margin-top: 120px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sub{
+            margin-top: 20px;
+            text-align: center;
+            font-family: "Arial";
+            font-weight: bold;
+        }
+        .input_form{
+            position: relative;
+            top: 40px;
+            width: 690px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .input_form ul{
+            list-style: none;
+        }
+        .input_form ul li{
+            height: 51px;
+            font-size: 19px;
+            display: inline-block;
+            text-align: center;
+            margin-left: 10px;
+        }
+        .input_form ul li li{
+            clear: both;
+        }
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #2e4982;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+
+    </style>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="/static/js/staff_top5_ba_graph.js"></script>
+    <script></script>
+</head>
+<body>
+    <div class="background">
+        <a href="{{ url_for("staffHomePage")}}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}" >logout</a>
+                </li>
+                <li>
+                    <p>{{ username }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="buttons">
+    <ul>
+        <li><a href="{{ url_for('staffHomePage') }}">Home</a></li>
+        <li><a href="{{ url_for('staffCreateFlight') }}">Create Flights</a></li>
+        <li><a href="{{ url_for('staffViewBA') }}">View Booking Agents</a></li>
+        <li><a href="{{ url_for('staffViewCustomers') }}">View Customers</a></li>
+        <li><a href="{{ url_for('staffViewReport') }}">View Report</a></li>
+    </ul>
+</div>
+
+    <div class="main">
+        <p class="title">Top 5 Booking Agents (By number of tickets sold last month)</p>
+        <div class="chart" id="top5_by_tickets_m" style="height: 800px; width: 50%"></div>
+        <p class="title">Top 5 Booking Agents (By number of tickets sold last year)</p>
+        <div class="chart" id="top5_by_tickets_y" style="height: 800px; width: 50%"></div>
+        <p class="title">Top 5 Booking Agents (By amount of commission received)</p>
+        <div class="chart" id="top5_by_commission" style="height: 800px; width: 50%"></div>
+        <br><br><br><br><br><br><br>
+    </div>
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+
+
+
+    <script>
+        //chat1 info
+        var chart1_id = "top5_by_tickets_m";
+        var chart1_type = "column";
+        var c1series1_name = "Tickets sold in the past month";
+        var c1series1_data = {{ top5_ba_tickets_m|safe }};
+        var c1title = "Top 5 By Tickets";
+        var c1xAxis_categories = {{ c1xAxis_categories_email_m|safe }};
+        var c1yAxis_title_text = "Num. of Tickets";
+        //chart2 info
+        var chart2_id = "top5_by_tickets_y";
+        var chart2_type = "column";
+        var c2series1_name = "Tickets sold in the past year";
+        var c2series1_data = {{ top5_ba_tickets_y|safe }};
+        var c2title = "Top 5 By Tickets";
+        var c2xAxis_categories = {{ c1xAxis_categories_email_y|safe }};
+        var c2yAxis_title_text = "Num. of Tickets";
+        //chart3 info
+        var chart3_id = "top5_by_commission";
+        var chart3_type = "column";
+        var c3series1_name = "Commission earned in the past year";
+        var c3series1_data = {{ top5_ba_commission|safe }};
+        var c3title = "Top 5 By Commission";
+        var c3xAxis_categories = {{ c2xAxis_categories_email|safe }};
+        var c3yAxis_title_text = "Amount of Commission";
+    </script>
+</body>
+</html>

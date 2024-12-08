@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>{{ user_data[1] }}'s spending</title>
+    <style>
+        .buttons ul{
+            list-style: none;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .buttons ul li{
+            padding: 10px 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        .buttons ul li a{
+            text-decoration: none;
+            padding: 10px 10px;
+            font-family: "Arial";
+            font-weight: bold;
+            color: black;
+        }
+        .buttons ul li a:hover{
+            background: #37b5ff;
+            color: white;
+        }
+        .img{
+            height: 320px;
+            background-image: url("{{ url_for("static", filename="option4.jpg") }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+
+        }
+        .content{
+            position: relative;
+            margin-top: 0px;
+        }
+        .title{
+            text-align: center;
+            padding-top: 100px;
+            font-family: "Arial";
+            font-weight: bolder;
+            font-size: 30px;
+            color: black;
+        }
+        .search_block{
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .search_form{
+            height: 90px;
+            position: relative;
+            padding-top: 150px;
+            width: 615px;
+        }
+
+        .search_form p{
+            display: inline-block;
+            margin-left: 10px;
+            width: 140px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .search_form ul{
+            list-style: none;
+            margin-left: 10px;
+            padding-top: 10px;
+            padding-left: 10px;
+            padding-bottom: 10px;
+            background-color: #02122C;
+            border-radius: 10px;
+
+        }
+
+        .search_form ul li{
+            display: inline-block;
+            margin-top: 0px;
+            margin-right: -8px;
+            margin-bottom: 6px;
+            list-style: none;
+        }
+        .From_input{
+            border: 2px solid grey;
+            border-radius: 10px 0 0 10px;
+            height: 55px;
+            width: 130px;
+            font-size: 15px;
+            font-weight: bold;
+            padding-left: 20px;
+
+        }
+
+        .From_input:hover{
+            cursor: pointer;
+        }
+
+        .To_input{
+            border: 2px solid grey;
+            height: 55px;
+            width: 130px;
+            font-size: 15px;
+
+            font-weight: bold;
+            padding-left: 20px;
+
+        }
+
+        .To_input:hover{
+            cursor: pointer;
+        }
+        .Flight_number_input{
+            border: 2px solid grey;
+            border-radius: 0 10px 10px 0;
+            height: 55px;
+            width: 130px;
+            font-size: 15px;
+            font-family: Arial;
+            font-weight: bold;
+            padding-left: 20px;
+        }
+        .Date_input{
+            border: 2px solid grey;
+            height: 53px;
+            width: 130px;
+            font-size: 15px;
+            font-family: Arial;
+            font-weight: bold;
+            padding-left: 20px;
+
+        }
+        .Date_input:hover{
+            cursor: pointer;
+        }
+        .Airline_input{
+            border: 2px solid grey;
+            height: 55px;
+            width: 130px;
+            font-size: 15px;
+            font-family: Arial;
+            font-weight: bold;
+            padding-left: 20px;
+        }
+        .Search {
+            position: relative;
+            right: -30px;
+            bottom: -5px;
+            border: 0px solid black;
+            border-radius: 5px;
+            background-color: #37b5ff;
+            padding-left: 28px;
+            padding-bottom: 2px;
+            color: white;
+            height: 45px;
+            width: 135px;
+            text-align: left;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .Search:hover{
+            cursor: pointer;
+            background-color: #5890c1;
+        }
+
+        .title{
+            position: relative;
+            top: 50px;
+            font-family: "Arial";
+            font-size: 25px;
+            font-weight: bold;
+        }
+        .chart{
+            margin-top: 120px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sub{
+            margin-top: 20px;
+            text-align: center;
+            font-family: "Arial";
+            font-weight: bold;
+        }
+        .input_form{
+            position: relative;
+            top: 40px;
+            width: 690px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .input_form ul{
+            list-style: none;
+        }
+        .input_form ul li{
+            height: 51px;
+            font-size: 19px;
+            display: inline-block;
+            text-align: center;
+            margin-left: 10px;
+        }
+        .input_form ul li li{
+            clear: both;
+        }
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #2e4982;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+
+
+    </style>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="/static/js/graph.js"></script>
+    <script src="/static/js/refresh_graph.js"></script>
+</head>
+<body>
+    <div class="background">
+        <a href="{{ url_for("customerHomePage")}}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}" >logout</a>
+                </li>
+                <li>
+                    <p>{{ user_data[0] }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="buttons">
+        <ul>
+            <li><a href="{{ url_for('customerHomePage') }}">Home</a></li>
+            <li><a href="{{ url_for('customerTrackSpending') }}">Track my Spending</a></li>
+            <li><a href="{{ url_for('customerViewFlight') }}">View my Flights</a></li>
+        </ul>
+    </div>
+    <div class="img">
+        <div class="search_block">
+            <form class="search_form" method="post">
+                <span>
+                <p>Select Year</p>
+                <p>Start Month</p>
+                <p>End Month</p>
+                </span>
+                <ul>
+                    <li>
+                        <select id="year" class="From_input">
+                            {% for i in year_option %}
+                            <option>{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+
+                    <li>
+                        <select id="start_date" class="Airline_input">
+                            {% for i in range(1,13) %}
+                            <option>{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                        <select id="end_date" class="Flight_number_input">
+                            {% for i in range(1,13) %}
+                            <option>{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                    <li>
+                        <button class="Search" type="submit">search</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+    <div class="main">
+        <p class="title">{{ user_data[1] }}'s annual spending: {{ annual_spending }}</p>
+        <div class="chart" id="customer_track_spending" style="height: 800px; width: 50%"></div>
+        <p class="sub" id="spending_by_range">Periodic Spending: {{ total_spending_in_range }}</p>
+        <br><br><br><br><br><br><br>
+    </div>
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+    <script>
+        var chart_id = "customer_track_spending";
+        var chart_type = "column";
+        var series1_name = "Monthly Spending";
+        var series1_data = {{ monthly_spending|safe }};
+        var title = "{{ user_data[1] }}'s Monthly Spending";
+        var xAxis_categories = {{ xAxis_categories|safe }};
+        var yAxis_title_text = "Dollar($)";
+    </script>
+</body>
+</html>

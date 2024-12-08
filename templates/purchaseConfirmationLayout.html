@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>Confirm Your Order</title>
+    <style>
+        .class1{
+            display: none;
+        }
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #2e4982;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+    </style>
+    {% block style_js %}
+    {% endblock %}
+</head>
+<body>
+    <div class="background">
+        <a href="{% block href_home %}{% endblock %}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}">logout</a>
+                </li>
+                <li>
+                    <p>{% block profile_button %}{% endblock %}</p>
+                    {% block innerlist %}{% endblock %}
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+</body>
+</html>

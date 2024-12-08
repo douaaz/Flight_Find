@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>Create Flight</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="/static/js/staff_view_cust.js"></script>
+    <style>
+        .buttons ul{
+            list-style: none;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .buttons ul li{
+            padding: 10px 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        .buttons ul li a{
+            text-decoration: none;
+            padding: 10px 10px;
+            font-family: "Arial";
+            font-weight: bold;
+            color: black;
+        }
+        .buttons ul li a:hover{
+            background: #37b5ff;
+            color: white;
+        }
+        .img{
+            height: 320px;
+            background-image: url("{{ url_for("static", filename="option4.jpg") }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+
+        }
+        .content{
+            position: relative;
+            margin-top: 0px;
+        }
+        .title{
+            text-align: center;
+            padding-top: 50px;
+            font-family: "Arial";
+            font-weight: bolder;
+            font-size: 30px;
+            color: black;
+        }
+        .search_block{
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .search_form{
+            height: 90px;
+            position: relative;
+            padding-top: 150px;
+            width: 355px;
+        }
+
+        .search_form p{
+            display: inline-block;
+            margin-left: 10px;
+            width: 140px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .search_form ul{
+            list-style: none;
+            margin-left: 10px;
+            padding-top: 10px;
+            padding-left: 10px;
+            padding-bottom: 10px;
+            background-color: #02122C;
+            border-radius: 10px;
+
+        }
+
+        .search_form ul li{
+            display: inline-block;
+            margin-top: 0px;
+            margin-right: -8px;
+            margin-bottom: 6px;
+            list-style: none;
+        }
+        .From_input{
+            border: 2px solid grey;
+            border-radius: 10px;
+            height: 55px;
+            width: 130px;
+            font-size: 15px;
+            font-weight: bold;
+            padding-left: 20px;
+
+        }
+        .From_input:hover{
+            cursor: pointer;
+        }
+        .Search {
+            position: relative;
+            right: -30px;
+            bottom: -5px;
+            border: 0px solid black;
+            border-radius: 5px;
+            background-color: #37b5ff;
+            padding-left: 28px;
+            padding-bottom: 2px;
+            color: white;
+            height: 45px;
+            width: 135px;
+            text-align: left;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .Search:hover{
+            cursor: pointer;
+            background-color: #5890c1;
+        }
+
+        .search_result{
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 830px;
+        }
+
+        .search_result p{
+            padding: 40px 0px;
+            background: #009879;
+
+        }
+
+        .search_result span{
+            font-family: Arial;
+            font-size: 24px;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+            width: 135px;
+            padding-left: 18px;
+            color: white;
+        }
+        .search_result ul{
+            list-style: none;
+            padding: 10px 20px;
+            height: 500px;
+            overflow-y: scroll;
+            border-left: 1px solid #cccccc;
+        }
+        .search_result ul li{
+            display: inline-block;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            text-align: center;
+            width: 152px;
+            font-family: Arial;
+            font-size: 20px;
+            border-bottom: 1px solid #cccccc;
+        }
+        .cust_list{
+            padding-top: 50px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 70px;
+            width: 500px;
+            text-align: center;
+        }
+        .cust_list li{
+            padding: 10px;
+            display: inline-block;
+            height: 50px;
+            font-weight: bold;
+            font-size: 25px;
+        }
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #2e4982;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="background">
+        <a href="{{ url_for("staffHomePage")}}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}" {##}>logout</a>
+                </li>
+                <li>
+                    <p>{{username}}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="buttons">
+    <ul>
+        <li><a href="{{ url_for('staffHomePage') }}">Home</a></li>
+        <li><a href="{{ url_for('staffCreateFlight') }}">Create Flights</a></li>
+        <li><a href="{{ url_for('staffViewBA') }}">View Booking Agents</a></li>
+        <li><a href="{{ url_for('staffViewCustomers') }}">View Customers</a></li>
+        <li><a href="{{ url_for('staffViewReport') }}">View Report</a></li>
+    </ul>
+</div>
+    <div class="img">
+        <div class="search_block">
+            <form class="search_form" method="post" id="form">
+                <spa>
+                    <p>Email</p>
+                </spa>
+                <ul>
+                    <li>
+                        <input type="email" class="From_input" id="cust_email" placeholder="customer email", required = required>
+                    </li>
+                    <li>
+                        <button class="Search" type="submit">Search</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+    <div class="search_result">
+        <p>
+            <span>Flight Number</span>
+            <span>Departure Airport</span>
+            <span>Departure Time</span>
+            <span>Arrival Airport</span>
+            <span>Arrival Time</span>
+        </p>
+        <ul id="result">
+        </ul>
+    </div>
+    <div class="main">
+        <p class="title">Most Frequent Customer:</p>
+        <ul class="cust_list">
+            <li>{{ most_frequent_cust["email"] }}</li>
+            <li>{{ most_frequent_cust["name"] }}</li>
+        </ul>
+    </div>
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+</body>
+</html>

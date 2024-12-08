@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>Create Flight</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("input[type = 'submit']").click(function(event){
+                var arrival_ap = $("input[name = 'arrival_airport']").val();
+                var departure_ap = $("input[name = 'departure_airport']").val();
+
+                if (arrival_ap == departure_ap && arrival_ap.length != 0){
+                    alert("Arrival airport cannot be the same as departure airport!");
+                    event.preventDefault();
+                };
+                var departure_date = $("input[name = 'departure_date']").val();
+                var departure_time = $("input[name = 'departure_time']").val();
+                var arrival_date = $("input[name = 'arrival_date']").val();
+                var arrival_time = $("input[name = 'departure_time']").val();
+
+                var departure = departure_date + ' ' + departure_time + ':00';
+                var arrival = arrival_date + ' ' + arrival_time + ':00';
+
+                var d_date = new Date(departure);
+                var a_date = new Date(arrival);
+
+                if (d_date > a_date){
+                    alert("departure time cannot be after arrival time!");
+                    event.preventDefault();
+                };
+            });
+        })
+    </script>
+    <style>
+        .class1{
+            display: none;
+        }
+        .buttons ul{
+            list-style: none;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .buttons ul li{
+            padding: 10px 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        .buttons ul li a{
+            text-decoration: none;
+            padding: 10px 10px;
+            font-family: "Arial";
+            font-weight: bold;
+            color: black;
+        }
+        .buttons ul li a:hover{
+            background: #37b5ff;
+            color: white;
+        }
+        .img{
+            height: 800px;
+            background-image: url("{{ url_for("static", filename="Airplane.jpg") }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .flight_form{
+            margin-left: 5%;
+            padding: 50px;
+            width: 500px;
+            background: #2e4982;
+            color: white;
+            height: 500px;
+            opacity: 0.90;
+        }
+        .flight_form form ul{
+            list-style: none;
+        }
+        .flight_form li{
+            display: inline-block;
+        }
+        .flight_form input{
+            margin: 10px 0;
+            background: transparent;
+            border: 0px;
+            border-bottom: 2px solid #c5ecfd;
+            padding: 10px;
+            color: grey;
+        }
+        .flight_form select{
+            margin: 10px 0;
+            background: transparent;
+            border: 0px;
+            border-bottom: 2px solid #c5ecfd;
+            padding: 10px;
+            color: grey;
+        }
+        .flight_form button{
+            background: #39b7dd;
+            text-align: center;
+            padding: 15px;
+            border: 0px solid black;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #2e4982;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <a href="{{ url_for("staffHomePage")}}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}" {##}>logout</a>
+                </li>
+                <li>
+                    <p>{{username}}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="buttons">
+        <ul>
+            <li><a href="{{ url_for('staffHomePage') }}">Home</a></li>
+            <li><a href="{{ url_for('staffCreateFlight') }}">Create Flights</a></li>
+            <li><a href="{{ url_for('staffViewBA') }}">View Booking Agents</a></li>
+            <li><a href="{{ url_for('staffViewCustomers') }}">View Customers</a></li>
+            <li><a href="{{ url_for('staffViewReport') }}">View Report</a></li>
+        </ul>
+    </div>
+    <div class="img">
+        <div class="flight_form">
+            <form action="{{ url_for("staffCreateProcess") }}" method="post">
+                <ul>
+                    <p>
+                        Airline Name: {{ airline_name }}
+                        <input type="text" name="airline_name" value="{{ airline_name }}" readonly class="class1">
+                    </p>
+                    <li>
+                        <input name="flight_num" type="number" placeholder="Flight Number" required = required>
+                    </li>
+                    <li>
+                        <input name="departure_airport" type="text" placeholder="Departure Airport" required = required>
+                    </li>
+                    <p>Departure Date</p>
+                    <li>
+                        <input name="departure_date" type="date" placeholder="Departure Date" required = required>
+                        <input name="departure_time" type="time" placeholder="Departure Time" required = required>
+                    </li>
+                    <li>
+                        <input name="arrival_airport" type="text" placeholder="Arrival Airport" required = required>
+                    </li>
+                    <p>Arrival Date</p>
+                    <li>
+                        <input name="arrival_date" type="date" placeholder="Arrival Date" required = required>
+                        <input name="arrival_time" type="time" placeholder="Arrival Time" required = required>
+                    </li>
+                    <li>
+                        <input name="price" type="number" min = "0" max = "9999999999" placeholder="Price" required = required>
+                    </li>
+                    <p>Status</p>
+                    <li>
+                        <select name="status">
+                            <option>Upcoming</option>
+                            <option>In-progress</option>
+                            <option>Delayed</option>
+                            <option>Cancelled</option>
+                        </select>
+                    </li>
+                    <li>
+                        <input name="airplane_id" type="number" min = "0" max = "99999999999" placeholder="Airplane ID" required = required>
+                    </li>
+                    <li>
+                        <button type="submit">Create</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+{% extends "purchaseConfirmationLayout.html" %}
+{% block style_js %}
+    <style>
+        .buttons ul{
+            list-style: none;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .buttons ul li{
+            padding: 10px 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        .buttons ul li a{
+            text-decoration: none;
+            padding: 10px 10px;
+            font-family: "Arial";
+            font-weight: bold;
+            color: black;
+        }
+        .buttons ul li a:hover{
+            background: #37b5ff;
+            color: white;
+        }
+        .h1{
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 50px;
+            padding-bottom: 20px;
+            text-align: center;
+            width: 500px;
+        }
+        .detail{
+            margin-left: auto;
+            margin-right: auto;
+            width: 1100px;
+        }
+        .detail ul{
+            padding-top: 20px;
+            padding-bottom: 120px;
+            list-style: none;
+        }
+        .detail li{
+            display: inline-block;
+            width: 340px;
+            padding: 5px;
+            text-align: center;
+        }
+        .detail p{
+            margin-top: 10px;
+            padding: 5px;
+            font-size: 15px;
+            font-weight: bold;
+            border: 1px solid black;
+
+        }
+        .detail button{
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            width: 120px;
+            left: 43%;
+            top: 60px;
+            height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #37b5ff;
+            color: white;
+            border: 0px solid;
+            border-radius: 10px;
+        }
+        .detail button:hover{
+            cursor: pointer;
+            background: #2e4982;
+        }
+    </style>
+
+{% endblock %}
+
+{#don't forget to delete the email!!!#}
+{% block href_home %}{{ url_for("customerHomePage") }}{% endblock %}
+
+{% block profile_button %}
+    {{ email }}
+{% endblock %}
+
+{% block content %}
+    <div class="buttons">
+        <ul>
+            <li><a href="{{ url_for('customerHomePage') }}">Home</a></li>
+            <li><a href="{{ url_for('customerTrackSpending') }}">Track my Spending</a></li>
+            <li><a href="{{ url_for('customerViewFlight') }}">View my Flights</a></li>
+        </ul>
+    </div>
+<div class='main'>
+    <h1 class="h1">Confirm Your Booking</h1>
+    <form action="/customerPurchaseProcess" method="post" class="detail">
+        <ul>
+            <li>
+                Airline Name
+                <p>{{ flight_info[0] }}</p>
+            </li>
+            <li>
+                Flight Number
+                <p>{{ flight_info[1] }}</p>
+            </li>
+            <li>
+                Departure Airport
+                <p>{{ flight_info[2] }}</p>
+            </li>
+            <li>
+                Departure Time
+                <p>{{ flight_info[3] }}</p>
+            </li>
+            <li>
+                Arrival Airport
+                <p>{{ flight_info[4] }}</p>
+            </li>
+            <li>
+                Arrival Time
+                <p>{{ flight_info[5] }}</p>
+            </li>
+            <li>
+                Price
+                <p>{{ flight_info[6] }}</p>
+            </li>
+            <li>
+                Status
+                <p>{{ flight_info[7] }}</p>
+            </li>
+            <li>
+                Number of Tickets Left
+                <p>{{ available_ticket_num }}</p>
+            </li>
+            <li style="display: none">
+                <input type="text"  name="airline_name" value="{{ flight_info[0] }}" readonly>
+            </li>
+            <li style="display: none">
+                <input type="text"  name="flight_num" value="{{ flight_info[1] }}" readonly>
+            </li>
+            <button>Book Now!</button>
+        </ul>
+    </form>
+</div>
+
+{% endblock %}

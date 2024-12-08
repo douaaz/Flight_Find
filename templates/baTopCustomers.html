@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>{{ email }}'s Top Customers</title>
+    <style>
+        .buttons ul{
+            list-style: none;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1150px;
+        }
+        .buttons ul li{
+            padding: 10px 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        .buttons ul li a{
+            text-decoration: none;
+            padding: 10px 10px;
+            font-family: "Arial";
+            font-weight: bold;
+            color: black;
+        }
+        .buttons ul li a:hover{
+            background: #37b5ff;
+            color: white;
+        }
+        .title{
+            text-align: center;
+            padding-top: 100px;
+            font-family: "Arial";
+            font-weight: bolder;
+            font-size: 30px;
+            color: black;
+        }
+        .chart{
+            margin-top: 120px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #2e4982;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+
+
+    </style>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="/static/js/ba_top5_graph.js"></script>
+    <script src="/static/js/ba_top5_refresh_graph.js"></script>
+    <script></script>
+</head>
+<body>
+    <div class="background">
+        <a href="{{ url_for("baHomePage")}}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <div class="profiletext">
+            <ul>
+                <li>
+                    <a onclick="javascript:alert('Logged out successfully!')"  href = "{{url_for("logout")}}" >logout</a>
+                </li>
+                <li>
+                    <p>{{ email }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="buttons">
+        <ul>
+            <li><a href="{{ url_for('baHomePage') }}">Home</a></li>
+            <li><a href="{{ url_for('baViewCommission') }}">View Commission</a></li>
+            <li><a href="{{ url_for('baViewFlight') }}">View my Flights</a></li>
+            <li><a href="{{ url_for('baTopCustomers') }}">Top Customers</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <p class="title">Top 5 Customers (By number of tickets bought)</p>
+        <div class="chart" id="top5_by_tickets" style="height: 800px; width: 50%"></div>
+        <p class="title">Top 5 Customers (By amount of commission received)</p>
+        <div class="chart" id="top5_by_commission" style="height: 800px; width: 50%"></div>
+        <br><br><br><br><br><br><br>
+    </div>
+
+    <script>
+        //chat1 info
+        var chart1_id = "top5_by_tickets";
+        var chart1_type = "column";
+        var c1series1_name = "Tickets bought in the past 6 months";
+        var c1series1_data = {{ top5_tickets|safe }};
+        var c1title = "Top 5 By Tickets";
+        var c1xAxis_categories = {{ c1xAxis_categories_email|safe }};
+        var c1yAxis_title_text = "Num. of Tickets";
+        //chart2 info
+        var chart2_id = "top5_by_commission";
+        var chart2_type = "column";
+        var c2series1_name = "Commission received in the past year";
+        var c2series1_data = {{ top5_commission|safe }};
+        var c2title = "Top 5 By Commission";
+        var c2xAxis_categories = {{ c2xAxis_categories_email|safe }};
+        var c2yAxis_title_text = "Amount of Commission";
+    </script>
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+</body>
+</html>

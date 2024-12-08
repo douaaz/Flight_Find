@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>Login Page</title>
+    <style>
+        .footer{
+            padding-top: 40px;
+            position: relative;
+            background-color: #023a45;
+            width: 100%;
+            height: 101px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .footer p{
+            text-align: center;
+            color: white;
+        }
+
+    </style>
+    {% block style %}
+    {% endblock %}
+</head>
+<body>
+    <div class="background">
+        <a href="{{url_for("indexPage")}}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+        <ul class="text">
+            <li>
+                <a href = "{{url_for("staffLoginPage")}}"> Airline Staff </a>
+            </li>
+
+            <li>
+                <a href = "{{url_for("baLoginPage")}}"> Booking Agent</a>
+            </li>
+
+            <li>
+                <a href = "{{url_for("customerLoginPage")}}"> Customer</a>
+            </li>
+        </ul>
+
+    </div>
+    <div class="imgoption1">
+        <div class="form">
+            <div>
+                <p>Login to get the full experience</p>
+                {% block login_type %}{% endblock %}
+                <form action = "/loginAuth" method = "POST" class="loginlayout">
+                    {% block input %}{% endblock %}
+                    <button>Log in</button>
+                </form>
+                <br>
+                <label>New here? <a href="{{ url_for("customerRegisterPage") }}">Register Now!</a></label>
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>Databases Project, Douaa Zouhir</p>
+    </div>
+
+    <script src="/static/js/force_refresh.js"></script>
+</body>
+</html>

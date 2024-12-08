@@ -1,0 +1,323 @@
+{% extends "homeLayout.html" %}
+
+{% block name %}{{ email }}{% endblock %}
+
+{% block style_js %}
+<style>
+    .class1{
+        display: none;
+    }
+    .buttons ul{
+        list-style: none;
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        width: 1150px;
+    }
+    .buttons ul li{
+        padding: 10px 10px;
+        display: inline-block;
+        text-align: left;
+    }
+    .buttons ul li a{
+        text-decoration: none;
+        padding: 10px 10px;
+        font-family: "Arial";
+        font-weight: bold;
+        color: black;
+    }
+    .buttons ul li a:hover{
+        background: #37b5ff;
+        color: white;
+    }
+    .img{
+        height: 527px;
+        background-image: url("{{ url_for("static", filename="option4.jpg") }}");
+        background-size: cover;
+        background-repeat: no-repeat;
+
+    }
+    .content{
+        position: relative;
+        margin-top: 0px;
+    }
+    .title{
+        text-align: center;
+        padding-top: 100px;
+        font-family: "Arial";
+        font-weight: bolder;
+        font-size: 30px;
+        color: white;
+        opacity: 100%;
+    }
+    .search_block{
+        position: relative;
+    }
+    .search_form{
+        height: 90px;
+        position: relative;
+        margin-top: 100px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 100px;
+        width: 1000px;
+
+    }
+
+    .search_form p{
+        display: inline-block;
+        margin-left: 10px;
+        width: 260px;
+        color: white;
+        font-weight: bold;
+    }
+
+    .search_form ul{
+        list-style: none;
+        margin-left: 10px;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        background-color: #ffffff;
+        border-radius: 10px;
+
+    }
+
+    .search_form ul li{
+        display: inline-block;
+        margin-top: 0px;
+        margin-right: -8px;
+        margin-bottom: 6px;
+        list-style: none;
+    }
+    .From_input{
+        border: 2px solid grey;
+        border-radius: 10px 0 0 10px;
+        height: 55px;
+        width: 240px;
+        font-size: 15px;
+        font-weight: bold;
+        padding-left: 20px;
+
+    }
+
+    .From_input:hover{
+        cursor: pointer;
+    }
+
+    .To_input{
+        border: 2px solid grey;
+        height: 55px;
+        width: 250px;
+        font-size: 15px;
+
+        font-weight: bold;
+        padding-left: 20px;
+
+    }
+
+    .To_input:hover{
+        cursor: pointer;
+    }
+    .Date_input{
+        border: 2px solid grey;
+        border-radius: 0 10px 10px 0;
+        height: 53px;
+        width: 243px;
+        font-size: 15px;
+        font-family: Arial;
+        font-weight: bold;
+        padding-left: 20px;
+
+    }
+    .Date_input:hover{
+        cursor: pointer;
+    }
+    .Search {
+        position: relative;
+        right: -30px;
+        bottom: -5px;
+        border: 0px solid black;
+        border-radius: 5px;
+        background-color: #37b5ff;
+        padding-left: 28px;
+        padding-bottom: 2px;
+        color: white;
+        height: 45px;
+        width: 135px;
+        text-align: left;
+        font-size: 23px;
+        font-weight: bold;
+    }
+
+    .Search:hover{
+        cursor: pointer;
+        background-color: #5890c1;
+    }
+
+    .search_result{
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        padding-bottom: 100px;
+        width: 1300px;
+    }
+
+    .search_result p{
+        padding: 40px 0px;
+        font-family: Arial;
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        background: #009879;
+    }
+
+    .search_result span{
+        display: inline-block;
+        text-align: center;
+        width: 117px;
+        padding-left: 18px;
+    }
+    .search_result ul{
+        list-style: none;
+        padding: 10px 20px;
+        height: 500px;
+        overflow-y: scroll;
+    }
+    .search_result ul li{
+        display: inline-block;
+
+    }
+    .search_result li li{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        text-align: center;
+        width: 133px;
+        font-family: Arial;
+        font-size: 20px;
+        border-bottom: 1px solid grey;
+    }
+    .search_result button{
+        width: 100px;
+        height: 40px;
+        font-size: 15px;
+        font-weight: bold;
+        border: 2px solid #5890c1;
+        border-radius: 10px;
+        background: #5890c1;
+        color: white
+    }
+    .search_result button:hover{
+        cursor: pointer;
+        background: #37b5ff;
+    }
+
+    .sub_title{
+        clear: both;
+        padding: 10px 10px;
+        text-align: center;
+        text-align: left;
+        color: black;
+        font-size: 25px;
+        font-family: "Arial Black";
+    }
+    .pic_list li{
+        list-style: none;
+        display: inline-block;
+    }
+    .city_left{
+        margin-left: 30px;
+    }
+    .city_right{
+        margin-left: 30px;
+    }
+    .recommend_pic1{
+        margin: 20px 20px;
+        height: 300px;
+        width: 450px;
+        border-radius: 10px;
+        box-shadow: 2px 1px 2px 3px #ccc;
+        transition: 0.5s;
+    }
+    .recommend_pic1:hover{
+        width: 470px;
+        height: 320px;
+    }
+    .recommend_pic2{
+        margin: 20px 20px;
+        height: 300px;
+        width: 600px;
+        border-radius: 10px;
+        box-shadow: 2px 1px 2px 3px #ccc;
+        transition: 0.5s;
+    }
+    .recommend_pic2:hover{
+        width: 620px;
+        height: 320px;
+    }
+
+
+</style>
+    <script src="{{ url_for('static', filename='js/ba_search_flight.js') }}"></script>
+{% endblock %}
+
+{% block href_home %}{{ url_for("baHomePage") }}{% endblock %}
+
+{% block profile_button %}{{ email }}{% endblock %}
+{% block content %}
+    <div class="buttons">
+    <ul>
+        <li><a href="{{url_for("baViewCommission")}}">View Commission</a></li>
+        <li><a href="{{ url_for('baViewFlight') }}">View my Flights</a></li>
+        <li><a href="{{ url_for('baTopCustomers') }}">Top Customers</a></li>
+    </ul>
+    </div>
+
+
+    <div class="img">
+        <div class="content">
+            <p class="title">Welcome, {{ email }}!</p>
+            <div class="search_block">
+                <form class="search_form" id="searchform" method="post">
+                    <p>From</p>
+                    <p>To</p>
+                    <p>Departure Date</p>
+                    <ul>
+                        <li>
+                            <input class="From_input" id="all_from" type="text" name = "source_airport" list="list1" placeholder="Any">
+                            <datalist id="list1">
+                                {% for i in city_airport_list %}
+                                    <option>{{ i }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </li>
+                        <li>
+                            <input class="To_input" id="all_to" type="text" name = "destination_airport" list="list2" placeholder="Any">
+                            <datalist id="list2">
+                                {% for i in city_airport_list %}
+                                    <option>{{ i }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </li>
+                        <li>
+                            <input class="Date_input" id="all_date" type="date" name = "date">
+                        </li>
+                        <li>
+                            <input class="Search" type="submit" name="search" id="public_search" value="search">
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="result" class='search_result'>
+        <h1 class="sub_title">Recommended for you:</h1>
+        <ol class="pic_list">
+            <li><h2 class="city_left">Shanghai</h2><a href="https://en.wikipedia.org/wiki/Shanghai" target="_blank"><img src="/static/Shanghai.jpg" class="recommend_pic1"></a></li>
+            <li><h2 class="city_right">New York</h2><a href="https://en.wikipedia.org/wiki/New_York_City" target="_blank"><img src="/static/Newyork.jpg" class="recommend_pic2"></a></li>
+            <li><h2 class="city_right">Chicago</h2><a href="https://en.wikipedia.org/wiki/Chicago" target="_blank"><img src="/static/Chicago.jpg" class="recommend_pic2"></a></li>
+            <li><h2 class="city_left">San Francisco</h2><a href="https://en.wikipedia.org/wiki/San_Francisco" target="_blank"><img src="/static/Sanfrancisco.jpg" class="recommend_pic1"></a></li>
+        </ol>
+    </div>
+
+{% endblock %}

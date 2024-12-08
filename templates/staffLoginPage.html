@@ -1,0 +1,22 @@
+{% extends "loginLayout.html" %}
+{% block style %}
+    <style>
+        .class1{
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block login_type %}<p>Airline Staff</p>{% endblock %}
+{% block input %}
+    <ul>
+        <input name="user_type" value = "Airline Staff" class="class1">
+        <li><a>username:</a><input name = "username" type="text" placeholder="Enter your username" maxlength="50" required="required"></li>
+        <li><a>password:</a><input name = "password" type="password" placeholder="Enter your password" maxlength="50" required="required"></li>
+    </ul>
+    {% if username_not_found %}
+    <label>This user does not exist! </label>
+    {% endif %}
+    {% if password_error %}
+    <label> Wrong password! </label>
+    {% endif %}
+{% endblock %}

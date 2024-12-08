@@ -1,0 +1,22 @@
+{% extends "loginLayout.html" %}
+{% block style %}
+    <style>
+        .class1{
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block login_type %}<p>Customer</p>{% endblock %}
+{% block input %}
+    <ul>
+        <input name="user_type" value = "Customer" class="class1">
+        <li><a>email:</a><input name = "email" type="email" placeholder="Enter your email" maxlength="50" required="required"></li>
+        <li><a>password:</a><input name = "password" type="password" placeholder="Enter your password" maxlength="50" required="required"></li>
+    </ul>
+    {% if email_not_found %}
+    <label>This user does not exist! </label>
+    {% endif %}
+    {% if password_error %}
+    <label> Wrong password! </label>
+    {% endif %}
+{% endblock %}

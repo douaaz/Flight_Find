@@ -1,0 +1,51 @@
+{% extends "RegisterLayout.html" %}
+{% block style %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("button").click(function(event){
+            var password = $("input[name = 'password']").val();
+            var confirm_pwd = $("input[name = 'confirm_pwd' ]").val();
+            var now = new Date();
+            birth_date1 = $("input[name = 'date_of_birth' ]").val();
+            var birth_date = new Date(birth_date1);
+            if (password != confirm_pwd){
+                alert("两次输入密码不一致");
+                event.preventDefault();
+            }
+            else if (birth_date > now){
+                alert("Please enter a valid date of birth");
+                event.preventDefault();
+            }
+        });
+    })
+</script>
+    <style>
+        .class1{
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block info %}
+<h1>Airline Staff Registration</h1>
+</br>
+</br>
+<ul>
+    <input name="user_type" value = "Airline Staff" class="class1" readonly>
+    <li><a>username:</a><input name="username" type="text" maxlength="50" required="required"></li>
+    <li><a>password:</a><input name="password" type="password" maxlength="30" required="required"></li>
+    <li><a>confirm password:</a><input name="confirm_pwd" type="password" maxlength="30" required="required"></li>
+    <li><a>first name:</a><input name="first_name" type="text" maxlength="50" required="required"></li>
+    <li><a>last name:</a><input name="last_name" type="text" maxlength="50" required="required"></li>
+    <li><a>Date of Birth:</a><input name="date_of_birth" type="date" maxlength="50" required="required"></li>
+    <li><a>Airline Name:</a>
+        <select name = "airline_name">
+            {% for i in airlines %}
+            <option>{{i}}</option>
+            {% endfor %}
+        </select>
+    </li>
+</ul>
+<label>{{ error }}</label>
+
+{% endblock %}

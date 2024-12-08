@@ -1,0 +1,363 @@
+
+/*navigationbar layout*/
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    background-color: white;
+}
+
+
+/*icon style*/
+.home_image{
+    position: relative;
+    top: 20px;
+    left: 155px;
+    width: 220px;
+    height: 60px;
+}
+.background{
+    height: 100px;
+    width: 100%;
+    min-width: 1300px;
+    background: white;
+}
+
+
+/*register/login button style*/
+.backgroundtext ul{
+    list-style: none;
+    position: relative;
+    right: 165px;
+    top: -25px;
+}
+.backgroundtext ul li{
+    float: right;
+    width: auto;
+    margin-left: 20px;
+
+}
+.backgroundtext li a{
+    padding-top: 8px;
+    width: 100px;
+    height: 27px;
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #03738a;
+    text-align: center;
+    font-family: Arial;
+    font-size: 16px;
+    font-weight: bold;
+    display: block;
+    border: 2px solid #03738a;
+    border-radius: 15px;
+}
+.backgroundtext li a:hover{
+    background: #023a45;
+    border: 2px solid #023a45;
+    color: white;
+}
+
+
+/*account type navibar button style*/
+.text{
+    list-style: none;
+    position: relative;
+    right: 200px;
+    top: -20px;
+}
+.text li{
+    float: right;
+    width: 150px;
+    margin-left: 10px;
+}
+.text li a{
+    padding-top: 8px;
+    width: auto;
+    height: 25px;
+    text-decoration: none;
+    color: #0a71e8;
+    text-align: center;
+    font-family: Arial;
+    font-size: 15px;
+    display: block;
+    border: 2px solid grey;
+    border-radius: 10px;
+}
+.text li a:hover{
+    background: #37b5ff;
+    color: white;
+}
+
+/*Profile navigationbar style*/
+.profiletext{
+    z-index: 10;
+    position: relative;
+    right: 200px;
+    top: -20px;
+}
+.profiletext li{
+    list-style: none;
+    float: right;
+    margin-right: 1px;
+}
+.profiletext li p{
+    margin-right: 15px;
+}
+.profiletext li a{
+    padding: 8px 20px;
+    text-decoration: none;
+    color: #0a71e8;
+    text-align: center;
+    font-family: Arial;
+    font-size: 15px;
+    border: 2px solid grey;
+    border-radius: 10px;
+}
+.profiletext li a:hover{
+    background: #37b5ff;
+    color: white;
+}
+.profiletext li:hover ul li{
+    display: block;
+}
+.profiletext li ul{
+    padding-top: 10px;
+    list-style: none;
+}
+.profiletext li ul li{
+    display: none;
+    text-align: center;
+    padding: 10px 10px;
+    height: 30px;
+    width: 150px;
+    clear: both;
+    background-color: #2e4982;
+    opacity: .8;
+}
+.profiletext li ul li:hover{
+    background: #37b5ff;
+    color: white;
+}
+
+/*content page background*/
+.main{
+    background: #e7e7e7;
+    width: 100%;
+    min-width: 1300px;
+}
+
+.imgoption1{
+    height: 800px;
+    background-image: url("/static/option3.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    min-width: 1300px;
+
+}
+.imgoption2{
+    height: 1100px;
+    background-image: url("/static/option1.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    min-width: 1300px;
+}
+
+/*login form frame style*/
+.form{
+    height: 100%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    background: gainsboro;
+    position: relative;
+    opacity: 0.85;
+}
+.form p{
+    position: relative;
+    top: 40px;
+    padding-top: 30px;
+    height: 50px;
+    font-family: "Arial";
+    font-weight: bolder;
+    font-size: 25px;
+}
+
+/*redirect hyperlink text*/
+.form label{
+    font-family: "Arial Black";
+    position: relative;
+    top: 125px;
+}
+
+/*register form frame style*/
+.registerform{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    background: gainsboro;
+    border: 2px solid black;
+    border-radius: 10px;
+    position: relative;
+    top:140px;
+    opacity: 0.95;
+}
+.registerform p{
+    position: relative;
+    top: 10px;
+    height: 50px;
+    font-family: "Arial";
+    font-weight: bolder;
+    font-size: 25px;
+}
+
+/*redirect hyperlink text*/
+.registerform label{
+    font-family: "Arial Black";
+}
+
+/*border of the login form*/
+.loginlayout{
+    height: 300px;
+    position: relative;
+    top: 45px;
+    max-width: 450px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*input text style*/
+.loginlayout ul{
+    padding: 50px 30px;
+    list-style: none;
+}
+.loginlayout ul li{
+    height: 60px;
+}
+
+.loginlayout ul li a{
+    margin-right: 20px;
+    width: 100px;
+    display: inline-block;
+    text-align: right;
+    font-family: "Arial";
+    font-size: 20px;
+}
+.loginlayout ul li input{
+    height: 30px;
+    font-size: 15px;
+    padding-left: 10px;
+    border: 2px solid grey;
+    border-radius: 5px;
+}
+
+/*login failure warning style*/
+.loginlayout label{
+    position: absolute;
+    left: 150px;
+    top: 160px;
+    color: red;
+    font-family: "Arial";
+    font-size: 15px;
+}
+
+/*Login button style*/
+.loginlayout button{
+    cursor: pointer;
+    position: relative;
+    bottom: 20px;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    border: 0px solid #96cfeb;
+    border-radius: 40px;
+    background-color: #96cfeb;
+}
+.loginlayout button:hover{
+    background-color: #e3eba8;
+}
+
+
+/*border of the register form*/
+.registerlayout{
+    position: relative;
+    top: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 20px;
+}
+
+/*input text style*/
+.registerlayout{
+    padding: 50px 50px;
+}
+
+
+.registerlayout ul li{
+    display: inline-block;
+    list-style: none;
+    height: 50px;
+}
+
+.registerlayout ul li a{
+    margin-right: 20px;
+    width: 180px;
+    display: inline-block;
+    text-align: right;
+    font-family: "Arial";
+    font-size: 20px;
+}
+.registerlayout ul li input{
+    height: 30px;
+    font-size: 15px;
+    padding-left: 10px;
+    border: 2px solid grey;
+    border-radius: 5px;
+}
+
+.registerlayout ul li select{
+
+    height: 30px;
+    font-size: 15px;
+    padding-left: 10px;
+    border: 2px solid grey;
+    border-radius: 5px;
+}
+
+/*register failure warning style*/
+.registerlayout label{
+    position: absolute;
+    left: auto;
+    right: auto;
+    top: auto;
+    color: red;
+    font-family: "Arial";
+    font-size: 15px;
+}
+
+/*Register button style*/
+.registerlayout button{
+    cursor: pointer;
+    position: relative;
+    top: 30px;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    border: 0px solid #96cfeb;
+    border-radius: 40px;
+    background-color: #96cfeb;
+}
+
+.registerlayout button:hover{
+    background-color: #cac19d;
+}
+
+

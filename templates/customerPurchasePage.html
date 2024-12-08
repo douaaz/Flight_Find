@@ -1,0 +1,298 @@
+{% extends "purchaseLayout.html" %}
+{% block style_js %}
+    <style>
+        .img{
+            height: 1000px;
+            background-image: url("{{ url_for("static", filename="background.jpg") }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .grey{
+            background: #ddd7dd;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+            min-width: 1300px;
+            max-width: 1500px;
+            height: 700px;
+            opacity: 0.5;
+        }
+        .content{
+            position: relative;
+            margin-top: -1000px;
+        }
+
+        .back{
+            position: relative;
+            top: 10px;
+            margin-left: 300px;
+            padding: 10px 30px;
+            /* margin-top: 32px; */
+            background-color: #37b5ff;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold
+        }
+
+        .title{
+            position: absolute;
+            top: 65px;
+            left: 39%;
+            font-family: "Arial";
+            font-weight: bolder;
+            font-size: 20px;
+            color: white;
+            background-color: darkgray;
+            opacity: 100%;
+            padding: 10px 10px;
+            border-radius: 10px;
+        }
+
+        .search_block{
+            position: relative;
+            top: 10px;
+            height: 40px;
+        }
+
+        .search_form{
+            height: 90px;
+            position: relative;
+            margin-top: 100px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 100px;
+            width: 1020px;
+
+        }
+
+        .search_form p{
+            display: inline-block;
+            margin-left: 75px;
+            width: 215px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .search_form ul{
+            list-style: none;
+            margin-left: 10px;
+            padding-left: 10px;
+            background-color: #ffc50e;
+            border: 5px solid #ffc50e;
+            border-radius: 10px;
+
+        }
+
+        .search_form ul li{
+            display: inline-block;
+            margin-top: 0px;
+            margin-right: -8px;
+            margin-bottom: 6px;
+            list-style: none;
+        }
+        .From_input{
+            border: 5px solid black;
+            border-radius: 5px 0 0 5px;
+            height: 50px;
+            width: 270px;
+            font-size: 15px;
+            font-weight: bold;
+            padding-left: 20px;
+
+        }
+
+        .From_input:hover{
+            cursor: pointer;
+        }
+
+        .To_input{
+            border: 5px solid black;
+            height: 50px;
+            width: 270px;
+            font-size: 15px;
+
+            font-weight: bold;
+            padding-left: 20px;
+
+        }
+
+        .To_input:hover{
+            cursor: pointer;
+        }
+        .Date_input{
+            border: 5px solid black;
+            border-radius: 0 5px 5px 0;
+            height: 50px;
+            width: 155px;
+            font-size: 15px;
+            font-family: Arial;
+            font-weight: bold;
+            padding-left: 20px;
+
+        }
+        .Date_input:hover{
+            cursor: pointer;
+        }
+
+        .Search {
+            position: absolute;
+            right: 12px;
+            bottom: -5px;
+            border: 0px solid black;
+            border-radius: 5px;
+            background-color: #37b5ff;
+            padding-left: 32px;
+            padding-bottom: 2px;
+            color: white;
+            height: 60px;
+            width: 150px;
+            text-align: left;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .Search:hover{
+            cursor: pointer;
+            background-color: #5890c1;
+        }
+
+        .magnifier{
+            position: relative;
+            top: 15px;
+            height: 45px;
+            width: 40px;
+        }
+        .search_result{
+            position: relative;
+            top: 120px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1200px;
+        }
+
+        .search_result p{
+            margin-left: 13px;
+            padding: 10px 10px;
+            font-family: Arial;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .search_result span{
+            display: inline-block;
+            text-align: center;
+            width: 108px;
+            padding-left: 18px;
+        }
+
+        .search_result ul{
+            list-style: none;
+            padding-left: 35px;
+            padding-bottom: 30px;
+            border: 5px solid black;
+            border-radius: 10px;
+
+        }
+        .search_result ul li{
+            display: inline-block;
+            height: 50px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .search_result li li{
+            text-align: center;
+            width: 125px;
+            font-family: Arial;
+            font-size: 18px;
+        }
+
+        .search_result ul li form input{
+            display: none;
+        }
+
+        .search_result ul li form button{
+            padding: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #5890c1;
+            border: 2px solid #5890c1;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .search_result ul li form button:hover{
+            background-color: #37b5ff;
+        }
+
+
+    </style>
+    <script src="{{ url_for('static', filename='js/cust_search_flight.js') }}"></script>
+{% endblock %}
+
+{% block href_home %}{{ url_for("customerHomePage")}}{% endblock %}
+
+{% block profile_button %}
+    {{ email }}
+{% endblock %}
+
+{% block innerlist %}
+    <ul>
+        <li><a href="{{ url_for('customerPurchaseFlight') }}">Purchase Tickets</a></li>
+        <li><a href="{{ url_for('customerTrackSpending') }}">Track my Spending</a></li>
+        <li><a href="#">View my Flights</a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="img">
+        <div class="grey">
+        </div>
+    </div>
+    <div class="content">
+        <a class="back" href="{{ url_for("customerHomePage") }}">Back</a>
+
+        <p class="title">Explore the best bargain on Flight Genius!</p>
+
+        <div class="search_block">
+            <form class="search_form" id="searchform" method="post">
+                <p>From</p>
+                <p>To</p>
+                <p>Date</p>
+                <ul>
+                    <img class="magnifier" src="{{ url_for("static", filename="magnifier.png") }}">
+                    <li>
+                        <input class="From_input" id="all_from" type="text" name = "source_airport" list="list1" placeholder="Any">
+                        <datalist id="list1">
+                            {% for i in city_airport_list %}
+                                <option>{{ i }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </li>
+                    <li>
+                        <input class="To_input" id="all_to" type="text" name = "destination_airport" list="list2" placeholder="Any">
+                        <datalist id="list2">
+                            {% for i in city_airport_list %}
+                                <option>{{ i }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </li>
+                    <li>
+                        <input class="Date_input" id="all_date" type="date" name = "date">
+                    </li>
+                    <li>
+                        <input class="Search" type="submit" name="search" id="public_search" value="search">
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <div id="result" class='search_result'>
+        </div>
+    </div>
+
+{% endblock %}

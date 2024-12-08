@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "shortcut icon"  href={{ url_for("static", filename="tab_icon_plane.jpg") }}>
+    <link rel = "stylesheet" href={{ url_for("static", filename="navigationbar_style.css") }}>
+    <title>Result</title>
+    {% block style_js %}
+    {% endblock %}
+</head>
+<body>
+    <div class="background">
+        <a href="{% block href_home %}{% endblock %}">
+            <img class="home_image" src="{{url_for("static", filename="icon.png")}}" alt="Failed to load image" >
+        </a>
+    </div>
+    {% block content %}{% endblock %}
+
+</body>
+</html>
