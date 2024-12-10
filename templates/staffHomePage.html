@@ -398,7 +398,7 @@
                         </datalist>
                     </li>
                     <li>
-                        <input class="Flight_number_input" id="flight_num" type="number" list="list4" placeholder="Any", min = "0">
+                        <input class="Flight_number_input" id="flight_num" type="number" list="list4" placeholder="Any" min = "0">
                         <datalist id="list4">
                             <option>any</option>
                             {% for i in flight_data %}
@@ -441,6 +441,7 @@
                 <span>Status</span>
             </p>
             <ul id="result">
+               
             </ul>
         </div>
     <div class="add_airplane">
@@ -485,6 +486,7 @@
     {#filter view flight results#}
     <script>
         var results = {{ flight_data|tojson|safe }};
+        console.log("results" ,results);
     </script>
     <script src="/static/js/staff_view_flight.js"></script>
 {% endblock %}

@@ -329,9 +329,9 @@
             <span>Customer</span>
         </p>
         <ul id="result">
-            {% for i in booked_flight_data %}
-                {% for j in i %}
-                    <li>{{ i[j] }}</li>
+            {% for row in booked_flight_data %}
+                {% for field in row %}
+                    <li>{{ field }}</li>
                 {% endfor %}
             {% endfor %}
         </ul>

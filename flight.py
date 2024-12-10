@@ -1111,26 +1111,18 @@ def baTopCustomers():
         if check_empty(email):
             return "Bad Session"
 
-        year = datetime.datetime.now().year
-        month = datetime.datetime.now().month
-        endmark = str(datetime.date(year,month,1))
-        month -= 6
-        if month <= 0:
-            month += 12
-            year -= 1
-        startmark = str(datetime.date(year,month,1))
+        date_mark = (datetime.datetime.now()-datetime.timedelta(days=180)).strftime("%Y-%m-%d")
         #get top 5 customer by ticket_num
         query = '''SELECT customer_email, name, COUNT(ticket_id) AS ticket_num
                     FROM purchases, customer
                     WHERE customer.email = purchases.customer_email
                     AND booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = %s)
-                    AND purchases.purchase_date >= %s
-                    AND purchases.purchase_date < %s
+                    AND purchases.purchase_date > %s
                     GROUP BY customer_email
                     ORDER BY ticket_num DESC
                     LIMIT 5;'''
         cursor = conn.cursor()
-        cursor.execute(query,(email,startmark,endmark))
+        cursor.execute(query,(email,date_mark))
         cust_info = cursor.fetchall()
         top5_tickets = []
         c1xAxis_categories_email = []
@@ -1193,7 +1185,7 @@ def baViewFlight():
                     AND (ticket.airline_name,ticket.flight_num) = (flight.airline_name,
                                                                   flight.flight_num);'''
 
-        cursor.execute(query, email)
+        cursor.execute(query, (email,))
         booked_flight_data = cursor.fetchall()
         cursor.close()
         result = []
@@ -1264,7 +1256,7 @@ def staffHomePage():
                     arrival_airport,arrival_time,price,status 
                     FROM flight 
                     WHERE airline_name = %s;'''
-        cursor.execute(query,airline_name)
+        cursor.execute(query,(airline_name,))
         flight_data = cursor.fetchall()
         result = []
         for e in flight_data:
@@ -1298,13 +1290,13 @@ def staffChangeFlight():
             return "Bad form"
 
         if status not in ["Scheduled","Delayed","In-progress","Cancelled","Canceled"]:
-            return "Bad form"
+            return "Bad status form"
 
         cursor = conn.cursor()
         query = "SELECT airline_name FROM airline_staff WHERE username = %s;"
         cursor.execute(query, username)
         try:
-            airline_name = cursor.fetchone()["airline_name"]
+            airline_name = cursor.fetchone()[0]
         except:
             return "Your information has been removed from the database. Please contact your admin for further info."
         query = '''UPDATE flight SET status = %s
@@ -1321,11 +1313,11 @@ def staffChangeFlight():
         data = cursor.fetchall()
         result = []
         for e in data:
-            temp = e
-            temp["flight_num"] = int(str(e["flight_num"]))
-            temp["price"] = int(str(e["price"]))
-            temp["departure_time"] = str(e["departure_time"])
-            temp["arrival_time"] = str(e["arrival_time"])
+            temp = list(e)
+            temp[1] = int(str(e[1]))
+            temp[6] = int(str(e[6]))
+            temp[3] = str(e[3])
+            temp[5] = str(e[5])
             result.append(temp)
         data = result
         cursor.close()
@@ -1333,30 +1325,48 @@ def staffChangeFlight():
     else:
         return redirect(url_for("indexPage"))
 
-@app.route("/staffAddAirport",methods = ["POST","GET"])
+@app.route("/staffAddAirport", methods=["POST", "GET"])
 def staffAddAirport():
     if session.get("username"):
+        username = session.get("username")
+
+        # Query to fetch the permission of the current user
+        query = "SELECT permission_type FROM permission WHERE username = %s;"
+        cursor = conn.cursor()
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        
+        # Check if the user exists and has the required permission
+        if not result or result[0] != "Admin":
+            cursor.close()
+            return jsonify({'data': "Error: You do not have the required permissions to perform this action!"})
         try:
             airport_name = request.form["airport_name"]
             airport_city = request.form["airport_city"]
         except:
+            cursor.close()
             return "Bad form"
-        if check_empty(airport_name,airport_city):
+
+        if check_empty(airport_name, airport_city):
+            cursor.close()
             return "Bad Form"
-        query = "SELECT airport_name, airport_city FROM airport;"
-        cursor = conn.cursor()
-        cursor.execute(query)
-        d = cursor.fetchall()
-        for e in d:
-            if e[0] == airport_name:
-                return jsonify({"data":"Error: Airport name already exists!"})
-        query = "INSERT INTO airport VALUES(%s,%s);"
-        cursor.execute(query,(airport_name,airport_city))
+
+        # Check if the airport name already exists
+        query = "SELECT airport_name FROM airport WHERE airport_name = %s;"
+        cursor.execute(query, (airport_name,))
+        if cursor.fetchone():
+            cursor.close()
+            return jsonify({"data": "Error: Airport name already exists!"})
+
+        # Insert the new airport into the database
+        query = "INSERT INTO airport (airport_name, airport_city) VALUES (%s, %s);"
+        cursor.execute(query, (airport_name, airport_city))
         conn.commit()
         cursor.close()
-        return jsonify({'data':"Success"})
+        return jsonify({'data': "Success"})
     else:
         return redirect(url_for("indexPage"))
+
 
 @app.route("/staffAddAirplane",methods = ["POST","GET"])
 def staffAddAirplane():
@@ -1374,7 +1384,7 @@ def staffAddAirplane():
         query = "SELECT airline_name FROM airline_staff WHERE username = %s;"
         cursor.execute(query, username)
         try:
-            airline_name = cursor.fetchone()["airline_name"]
+            airline_name = cursor.fetchone()[0]
         except:
             return "Your information has been removed from the database. Please contact your admin for further info."
 
@@ -1403,7 +1413,7 @@ def staffCreateFlight():
         query = "SELECT airline_name FROM airline_staff WHERE username = %s;"
         cursor = conn.cursor()
         cursor.execute(query,username)
-        airline_name = cursor.fetchone()["airline_name"]
+        airline_name = cursor.fetchone()[0]
         cursor.close()
         return render_template("staffCreateFlight.html",username = username, airline_name = airline_name)
     else:
@@ -1437,7 +1447,7 @@ def staffCreateProcess():
         query = "SELECT airline_name FROM airline_staff WHERE username = %s;"
         cursor.execute(query, username)
         try:
-            airline_name = cursor.fetchone()["airline_name"]
+            airline_name = cursor.fetchone()[0]
         except:
             return "Your information has been removed from the database. Please contact your admin for further info."
         #check flight_num duplicate
@@ -1453,7 +1463,7 @@ def staffCreateProcess():
         d = cursor.fetchall()
         l = []
         for e in d:
-            l.append(e["airport_name"])
+            l.append(e[0])
 
         if not(arrival_airport  in l):
             return redirect(url_for("staffCreateResult",result = "Please enter a valid arrival airport"))
@@ -1504,7 +1514,7 @@ def staffViewBA():
         query = '''SELECT airline_name FROM airline_staff WHERE username = %s;'''
         cursor = conn.cursor()
         cursor.execute(query,username)
-        airline_name = cursor.fetchone()["airline_name"]
+        airline_name = cursor.fetchone()[0]
 
         #get top5 ba by tickets sold last month
         year = datetime.datetime.now().year
@@ -1528,8 +1538,8 @@ def staffViewBA():
         c1xAxis_categories_email_m = []
         d = cursor.fetchall()
         for e in d:
-            top5_ba_tickets_m.append(int(e["num_of_ticket"]))
-            c1xAxis_categories_email_m.append(e["email"])
+            top5_ba_tickets_m.append(int(e[1]))
+            c1xAxis_categories_email_m.append(e[0])
 
         # get top5 ba by tickets sold last year
         year = datetime.datetime.now().year - 1
@@ -1547,8 +1557,8 @@ def staffViewBA():
         c1xAxis_categories_email_y = []
         d = cursor.fetchall()
         for e in d:
-            top5_ba_tickets_y.append(int(e["num_of_ticket"]))
-            c1xAxis_categories_email_y.append(e["email"])
+            top5_ba_tickets_y.append(int(e[1]))
+            c1xAxis_categories_email_y.append(e[0])
 
         #get top5 ba by commission earned last year
         query = '''SELECT b.email, SUM(f.price*0.1) commission
@@ -1566,8 +1576,8 @@ def staffViewBA():
         top5_ba_commission = []
         c2xAxis_categories_email = []
         for e in d:
-            top5_ba_commission.append(float(e["commission"]))
-            c2xAxis_categories_email.append(e["email"])
+            top5_ba_commission.append(float(e[1]))
+            c2xAxis_categories_email.append(e[0])
         cursor.close()
         return render_template("staffViewBA.html",username= username,
                                top5_ba_tickets_m = top5_ba_tickets_m,
@@ -1603,11 +1613,11 @@ def staffViewCustomers():
         d = cursor.fetchone()
         cursor.close()
         if d:
-            most_frequent_cust["email"] = d["customer_email"]
-            most_frequent_cust["name"] = d["name"]
+            most_frequent_cust[1] = d[1]
+            most_frequent_cust[0] = d[0]
         else:
-            most_frequent_cust["email"] = None
-            most_frequent_cust["name"] = None
+            most_frequent_cust[1] = None
+            most_frequent_cust[0] = None
 
         return render_template("staffViewCustomers.html", username = username,
                                most_frequent_cust = most_frequent_cust)
@@ -1645,9 +1655,9 @@ def staffProcessCustomers():
         res = []
         for e in d:
             temp = e
-            temp["arrival_time"] = str(e["arrival_time"])
-            temp["departure_time"] = str(e["departure_time"])
-            temp["price"] = float(e["price"])
+            temp[5] = str(e[5])
+            temp[3] = str(e[3])
+            temp[6] = float(e[6])
             res.append(temp)
 
         return jsonify({"data":res})
@@ -1665,7 +1675,7 @@ def staffViewReport():
         cursor = conn.cursor()
         try:
             cursor.execute(query, username)
-            airline_name = cursor.fetchone()["airline_name"]
+            airline_name = cursor.fetchone()[0]
         except:
             return "Your information has been removed from the database. Please contact your admin for further info."
 
@@ -1721,7 +1731,7 @@ def staffViewReport():
                             AND p.booking_agent_id IS NOT NULL
                             AND YEAR(p.purchase_date) = %s'''
         cursor.execute(query, (airline_name, year))
-        annually_indirect = cursor.fetchone()["annually_indirect"]
+        annually_indirect = cursor.fetchone()[0]
         if not annually_indirect:
             annually_indirect = 0
 
@@ -1734,7 +1744,7 @@ def staffViewReport():
                                 AND p.booking_agent_id IS NULL
                                 AND YEAR(p.purchase_date) = %s'''
         cursor.execute(query, (airline_name, year))
-        annually_direct = cursor.fetchone()["annually_direct"]
+        annually_direct = cursor.fetchone()[0]
         if not annually_direct:
             annually_direct = 0
 
@@ -1753,7 +1763,7 @@ def staffViewReport():
                                     AND YEAR(p.purchase_date) = %s
                                     AND MONTH(p.purchase_date) = %s;'''
         cursor.execute(query, (airline_name, year, month))
-        monthly_indirect = cursor.fetchone()["monthly_indirect"]
+        monthly_indirect = cursor.fetchone()[0]
         if not monthly_indirect:
             monthly_indirect = 0
 
@@ -1767,7 +1777,7 @@ def staffViewReport():
                                             AND YEAR(p.purchase_date) = %s
                                             AND MONTH(p.purchase_date) = %s;'''
         cursor.execute(query, (airline_name, year, month))
-        monthly_direct = cursor.fetchone()["monthly_direct"]
+        monthly_direct = cursor.fetchone()[0]
         if not monthly_direct:
             monthly_direct = 0
 
@@ -1779,7 +1789,7 @@ def staffViewReport():
                     AND t.ticket_id = p.ticket_id
                     AND YEAR(p.purchase_date) = %s;'''
         cursor.execute(query,(username,year))
-        total_ticket_num = cursor.fetchone()["total_ticket_num"]
+        total_ticket_num = cursor.fetchone()[0]
         if not total_ticket_num:
             total_ticket_num = 0
 
@@ -1794,7 +1804,7 @@ def staffViewReport():
         monthly_ticket_breakdown = []
         for i in range(1,13):
             cursor.execute(query,(username,year,i))
-            ticket_num = cursor.fetchone()["total_ticket_num"]
+            ticket_num = cursor.fetchone()[0]
             if not ticket_num:
                 ticket_num = 0
             xAxis_categories.append("%s.%s"%(year,i))
