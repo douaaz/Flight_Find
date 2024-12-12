@@ -38,7 +38,7 @@ $(document).ready(function () {
         status.value = info[i][7];  // Assuming info[i][7] is "status"
 
         // Create status options
-        var options = ["Cancelled", "In-progress", "Delayed", "Cancelled"];
+        var options = ["Cancelled", "Scheduled","Delayed", "Cancelled"];
         var index = options.indexOf(info[i][7]);  // Assuming info[i][7] is "status"
         options.splice(index, 1);
         options.splice(0, 0, info[i][7]);  // Pre-select the current status
@@ -190,7 +190,7 @@ $(document).ready(function () {
                 status.id = "form_status" + info[i][1];  // Assuming info[i][1] is "flight_num"
                 status.value = info[i][7];  // Assuming info[i][7] is "status"
 
-                var options = ["Scheduled", "In-progress", "Delayed", "Cancelled"];
+                var options = ["Scheduled",  "Delayed", "Cancelled"];
                 var index = options.indexOf(info[i][7]);  // Assuming info[i][7] is "status"
                 options.splice(index, 1);
                 options.splice(0, 0, info[i][7]);  // Pre-select the current status

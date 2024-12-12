@@ -363,6 +363,8 @@
             <li><a href="{{ url_for('staffViewBA') }}">View Booking Agents</a></li>
             <li><a href="{{ url_for('staffViewCustomers') }}">View Customers</a></li>
             <li><a href="{{ url_for('staffViewReport') }}">View Report</a></li>
+            <li><a href="{{ url_for('staffGrantPermissions') }}">Grant Permissions</a></li>
+            <li><a href="{{ url_for('staffAddBA') }}"">Add Booking Agent</a></li>
         </ul>
     </div>
     <div class="img">
@@ -415,7 +417,6 @@
                     <li>
                         <select id="status" class="Status_input">
                             <option>Scheduled</option>
-                            <option>In-progress</option>
                             <option>Delayed</option>
                             <option>Cancelled</option>
                         </select>

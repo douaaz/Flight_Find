@@ -17,15 +17,15 @@ $(document).ready(function () {
                 let info = eval(data["data"]);
                 for (var i = 0; i < info.length; i++){
                     var flight_num = document.createElement('li');
-                        flight_num.innerHTML = info[i]["flight_num"];
+                        flight_num.innerHTML = info[i][1];
                     var depature_ap = document.createElement('li');
-                        depature_ap.innerHTML = info[i]["departure_airport"];
+                        depature_ap.innerHTML = info[i][2];
                     var departure_time = document.createElement('li');
-                        departure_time.innerHTML = info[i]["departure_time"];
+                        departure_time.innerHTML = info[i][3];
                     var arrival_ap = document.createElement('li');
-                        arrival_ap.innerHTML = info[i]["arrival_airport"];
+                        arrival_ap.innerHTML = info[i][4];
                     var arrival_time = document.createElement('li');
-                        arrival_time.innerHTML = info[i]["arrival_time"];
+                        arrival_time.innerHTML = info[i][5];
 
                     document.getElementById("result").appendChild(flight_num);
                     document.getElementById("result").appendChild(depature_ap);

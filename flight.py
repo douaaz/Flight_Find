@@ -953,12 +953,23 @@ def baPurchaseProcess():
         if check_empty(email,cust_email,airline_name):
             return "Bad Form"
 
+
         cursor = conn.cursor()
 
         #get booking agent id
         query = '''SELECT booking_agent_id FROM booking_agent WHERE email = %s;'''
         cursor.execute(query,email)
         ba_id = cursor.fetchone()[0]
+        
+        #check if booking agent works for the airline
+        query = "SELECT airline_name FROM booking_agent_work_for WHERE email = %s"
+        cursor.execute(query,(email))
+        airline = cursor.fetchall()
+        if airline[0][0] != airline_name:
+            cursor.close()
+            return "You can't purchase a flight for this airline!"
+        
+
 
         #check if input customer_email is valid
         query = "SELECT * FROM customer WHERE email = %s"
@@ -1282,19 +1293,32 @@ def staffHomePage():
 @app.route("/staffChangeFlight",methods = ["POST","GET"])
 def staffChangeFlight():
     if session.get("username"):
+        username = session["username"]
+        # Query to fetch the permission of the current user
+        query = "SELECT permission_type FROM permission WHERE username = %s;"
+        cursor = conn.cursor()
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        
+        # Check if the user exists and has the required permission
+        if not result or result[0] != "Operator":
+            cursor.close()
+            return "Wrong Permission"
         try:
-            username = session["username"]
             flight_num = int(request.form["flight_num"])
             status = request.form["status"]
         except:
             return "Bad form"
 
-        if status not in ["Scheduled","Delayed","In-progress","Cancelled","Canceled"]:
+        if status not in ["Scheduled","Delayed","Cancelled","Canceled"]:
             return "Bad status form"
-
+        
+                 
+            
         cursor = conn.cursor()
         query = "SELECT airline_name FROM airline_staff WHERE username = %s;"
         cursor.execute(query, username)
+        
         try:
             airline_name = cursor.fetchone()[0]
         except:
@@ -1371,8 +1395,18 @@ def staffAddAirport():
 @app.route("/staffAddAirplane",methods = ["POST","GET"])
 def staffAddAirplane():
     if session.get("username"):
+        username = session["username"]
+         # Query to fetch the permission of the current user
+        query = "SELECT permission_type FROM permission WHERE username = %s;"
+        cursor = conn.cursor()
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        
+        # Check if the user exists and has the required permission
+        if not result or result[0] != "Admin":
+            cursor.close()
+            return jsonify({'data': "Error: You do not have the required permissions to perform this action!"})
         try:
-            username = session["username"]
             airplane_id = int(request.form["airplane_id"])
             seats = int(request.form["seats"])
         except:
@@ -1440,7 +1474,7 @@ def staffCreateProcess():
         if check_empty(username,departure_date,departure_time,arrival_airport,arrival_date,arrival_time,status):
             return "Bad Form"
 
-        if price < 0 or flight_num < 0 or status not in ["Upcoming","Delayed","In-progress","Cancelled","Canceled"]:
+        if price < 0 or flight_num < 0 or status not in ["Scheduled","Delayed","Cancelled","Canceled"]:
             return "Bad form"
 
         cursor = conn.cursor()
@@ -1490,6 +1524,24 @@ def staffCreateProcess():
                                 status,
                                 airplane_id))
         conn.commit()
+        # Get the number of seats for the airplane
+        query = '''SELECT seats FROM airplane WHERE airplane_id = %s;'''
+        cursor.execute(query, (airplane_id,))
+        result = cursor.fetchone()
+
+        if result:
+            number_of_seats = result[0]  # Assuming 'seats' column contains the seat count
+            
+            # Add tickets for each seat
+            ticket_query = '''INSERT INTO ticket VALUES(%s,%s,%s);'''
+            for i in range(1, number_of_seats + 1):
+                ticket_id = i+flight_num  # Generate unique ticket_id
+                cursor.execute(ticket_query, (ticket_id, airline_name, flight_num))
+
+            conn.commit()
+        else:
+            cursor.close()
+            return "Error: Airplane ID not found or seats not defined."
         cursor.close()
         return redirect(url_for("staffCreateResult",result = "Success"))
     else:
@@ -1519,7 +1571,7 @@ def staffViewBA():
         #get top5 ba by tickets sold last month
         year = datetime.datetime.now().year
         month = datetime.datetime.now().month - 1
-        if month == 0:
+        if month == 0:  # Handle January
             month = 12
             year -= 1
 
@@ -1528,8 +1580,8 @@ def staffViewBA():
                     WHERE p.booking_agent_id = b.booking_agent_id
                     AND p.ticket_id = t.ticket_id
                     AND t.airline_name = %s
-                    AND MONTH(p.purchase_date) = %s
-                    AND YEAR(p.purchase_date) = %s
+                    AND MONTH(p.purchase_date) >= %s
+                    AND YEAR(p.purchase_date) >= %s
                     GROUP BY b.email
                     ORDER BY num_of_ticket DESC
                     LIMIT 5;'''
@@ -1548,7 +1600,7 @@ def staffViewBA():
                             WHERE p.booking_agent_id = b.booking_agent_id
                             AND p.ticket_id = t.ticket_id
                             AND t.airline_name = %s
-                            AND YEAR(p.purchase_date) = %s
+                            AND YEAR(p.purchase_date) >= %s
                             GROUP BY b.email
                             ORDER BY num_of_ticket DESC
                             LIMIT 5;'''
@@ -1566,7 +1618,7 @@ def staffViewBA():
                         WHERE b.booking_agent_id = p.booking_agent_id
                         AND p.ticket_id = t.ticket_id
                         AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
-                        AND YEAR(p.purchase_date) = %s
+                        AND YEAR(p.purchase_date) >= %s
                         AND t.airline_name = %s
                         GROUP BY b.email
                         ORDER BY commission DESC
@@ -1603,7 +1655,7 @@ def staffViewCustomers():
                     WHERE p.ticket_id = t.ticket_id
                     AND c.email = p.customer_email
                     AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = %s)
-                    AND YEAR(p.purchase_date) = %s
+                    AND YEAR(p.purchase_date) > %s
                     GROUP BY p.customer_email
                     ORDER BY ticket_num DESC
                     LIMIT 1;'''
@@ -1654,7 +1706,7 @@ def staffProcessCustomers():
         cursor.close()
         res = []
         for e in d:
-            temp = e
+            temp = list(e)
             temp[5] = str(e[5])
             temp[3] = str(e[3])
             temp[6] = float(e[6])
@@ -1663,6 +1715,165 @@ def staffProcessCustomers():
         return jsonify({"data":res})
     else:
         return redirect(url_for("indexPage"))
+    
+@app.route("/staffAddBA", methods=["GET", "POST"])
+def staffAddBA():
+    if session.get("username"):
+        username = session["username"]
+        
+        # Check if the session is valid
+        if check_empty(username):
+            return "Bad Session"
+        
+        # Retrieve the user's permission type from the database
+        query = "SELECT permission_type FROM permission WHERE username = %s"
+        cursor = conn.cursor()
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        cursor.close()
+
+        # If user doesn't exist or doesn't have Admin permission, deny access
+        if not result or result[0] != "Admin":
+            return "You don't have permission to perform this action."
+
+        if request.method == "POST":
+            # Get the form data
+            email = request.form.get("email")
+            booking_agent_id = request.form.get("booking_agent_id")
+
+            # Validate input
+            if not email or not booking_agent_id:
+                return "Invalid input, all fields are required."
+
+            try:
+                # Insert into the database
+                query = """
+                INSERT INTO booking_agent (email, booking_agent_id, password)
+                VALUES (%s, %s, %s);
+                """
+                cursor = conn.cursor()
+                password = '0cc175b9c0f1b6a831c399e269772661'
+                cursor.execute(query, (email, booking_agent_id, password))
+                conn.commit()
+                # Get the airline name for the logged-in staff member
+                query = '''SELECT airline_name FROM airline_staff WHERE username = %s;'''
+                cursor.execute(query, (username,))
+                airline_name = cursor.fetchone()[0]
+                query = """
+                INSERT INTO booking_agent_work_for (email, airline_name)
+                VALUES (%s, %s);
+                """
+                cursor = conn.cursor()
+                cursor.execute(query, (email, airline_name))
+                conn.commit()
+                cursor.close()
+
+                # Redirect or provide feedback
+                return redirect(url_for("staffViewBA"))  # Assuming you have a route for viewing booking agents
+
+            except Exception as e:
+                conn.rollback()  # Rollback transaction in case of error
+                return f"An error occurred: {str(e)}"
+
+        # Render the form page for GET requests
+        return render_template("staffAddBA.html", username=username)
+    else:
+        return redirect(url_for("indexPage"))
+
+    
+@app.route("/staffGrantPermissions", methods=["GET", "POST"])
+def staffGrantPermissions():
+    if session.get("username"):
+        username = session["username"]
+        if check_empty(username):
+            return "Bad Session"
+        
+        # Check if the logged-in user has admin permissions
+        query = '''
+            SELECT permission_type 
+            FROM permission 
+            WHERE username = %s
+        '''
+        cursor = conn.cursor()
+        cursor.execute(query, (username,))
+        user_permission = cursor.fetchone()
+        
+        if not user_permission or user_permission[0] != 'Admin':
+            cursor.close()
+            return jsonify({"error": "Unauthorized access"}), 403
+        
+        if request.method == "POST":
+            # Handle POST request to update permission
+            first_name = request.form.get("first_name")
+            last_name = request.form.get("last_name")
+            new_permission = request.form.get("new_permission")
+
+            if not (first_name and last_name and new_permission):
+                return jsonify({"error": "Invalid input"}), 400
+
+            try:
+                # SQL query to update the permission type
+                query = '''
+                    UPDATE permission
+                    SET permission_type = %s
+                    WHERE username IN (
+                        SELECT username
+                        FROM airline_staff
+                        WHERE first_name = %s AND last_name = %s
+                    )
+                '''
+                cursor.execute(query, (new_permission, first_name, last_name))
+                conn.commit()
+                cursor.close()
+
+                return jsonify({"success": "Permission updated successfully"}), 200
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
+
+        # Handle GET request to display permissions
+        # Get the airline name for the logged-in staff member
+        query = '''SELECT airline_name FROM airline_staff WHERE username = %s;'''
+        cursor.execute(query, (username,))
+        airline_name = cursor.fetchone()[0]
+
+        # SQL query to get details of all airline staff and their permission types
+        query = '''
+            SELECT 
+                a.first_name, 
+                a.last_name, 
+                p.permission_type 
+            FROM 
+                airline_staff a
+            JOIN 
+                permission p ON a.username = p.username
+            WHERE
+                a.airline_name = %s
+        '''
+
+        cursor.execute(query, (airline_name,))
+        
+        # Fetch all the results of the query
+        staff_details = cursor.fetchall()
+        cursor.close()
+
+        # Prepare staff_info as a list of dictionaries
+        staff_info = []
+        for detail in staff_details:
+            staff_info.append({
+                "first_name": detail[0],
+                "last_name": detail[1],
+                "permission_type": detail[2]
+            })
+
+        # Render the template with staff info
+        return render_template("staffGrantPermissions.html", username=username, staff_info=staff_info)
+    else:
+        return redirect(url_for("indexPage"))
+
+
+
+
+
 
 @app.route("/staffViewReport",methods = ["GET"])
 def staffViewReport():
@@ -1687,7 +1898,7 @@ def staffViewReport():
                             AND (f.airline_name, f.flight_num) = (t.airline_name,t.flight_num)
                             AND f.status != "Cancelled"
                             AND f.airline_name = %s
-                            AND year(f.arrival_time) = %s
+                            AND year(f.arrival_time) > %s
                             AND t.ticket_id in (SELECT ticket_id FROM purchases)
                             GROUP BY airport_city
                             ORDER BY traffic_num DESC
@@ -1712,25 +1923,24 @@ def staffViewReport():
                                     AND (f.airline_name, f.flight_num) = (t.airline_name, t.flight_num)
                                     AND f.status != "Cancelled"
                                     AND f.airline_name = %s
-                                    AND f.arrival_time < %s
                                     AND f.arrival_time >= %s
                                     AND t.ticket_id in (SELECT ticket_id FROM purchases)
                                     GROUP BY airport_city
                                     ORDER BY traffic_num DESC
                                     LIMIT 3;'''
-        cursor.execute(query, (airline_name, endmark, startmark))
+        cursor.execute(query, (airline_name, startmark))
         top3_destinations_m = cursor.fetchall()
 
         # get annually_indirect
-        year = datetime.datetime.now().year - 1
+        #year = datetime.datetime.now().year 
         query = '''SELECT SUM(f.price) annually_indirect
                             FROM purchases p , ticket t, flight f
                             WHERE p.ticket_id = t.ticket_id
                             AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
                             AND f.airline_name = %s
                             AND p.booking_agent_id IS NOT NULL
-                            AND YEAR(p.purchase_date) = %s'''
-        cursor.execute(query, (airline_name, year))
+                            AND YEAR(p.purchase_date) >= %s'''
+        cursor.execute(query, (airline_name, last_year))
         annually_indirect = cursor.fetchone()[0]
         if not annually_indirect:
             annually_indirect = 0
@@ -1742,18 +1952,16 @@ def staffViewReport():
                                 AND (t.airline_name,t.flight_num) = (f.airline_name,f.flight_num)
                                 AND f.airline_name = %s
                                 AND p.booking_agent_id IS NULL
-                                AND YEAR(p.purchase_date) = %s'''
-        cursor.execute(query, (airline_name, year))
+                                AND YEAR(p.purchase_date) >= %s'''
+        cursor.execute(query, (airline_name, last_year))
         annually_direct = cursor.fetchone()[0]
         if not annually_direct:
             annually_direct = 0
 
         # get monthly indirect
-        year += 1
-        month = datetime.datetime.now().month - 1
-        if month == 0:
-            year -= 1
-            month = 12
+        
+        month = datetime.datetime.now().month
+        year = datetime.datetime.now().year
         query = '''SELECT SUM(f.price) monthly_indirect
                                     FROM purchases p , ticket t, flight f
                                     WHERE p.ticket_id = t.ticket_id
@@ -1787,7 +1995,7 @@ def staffViewReport():
                     FROM ticket t, purchases p
                     WHERE airline_name = (SELECT airline_name FROM airline_staff WHERE username = %s)
                     AND t.ticket_id = p.ticket_id
-                    AND YEAR(p.purchase_date) = %s;'''
+                    AND YEAR(p.purchase_date) > %s;'''
         cursor.execute(query,(username,year))
         total_ticket_num = cursor.fetchone()[0]
         if not total_ticket_num:
@@ -1798,7 +2006,7 @@ def staffViewReport():
                     FROM ticket t, purchases p
                     WHERE airline_name = (SELECT airline_name FROM airline_staff WHERE username = %s)
                     AND t.ticket_id = p.ticket_id
-                    AND YEAR(p.purchase_date) = %s
+                    AND YEAR(p.purchase_date) > %s
                     AND MONTH(p.purchase_date) = %s;'''
         xAxis_categories = []
         monthly_ticket_breakdown = []

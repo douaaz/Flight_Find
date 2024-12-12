@@ -140,14 +140,14 @@
             </p>
             {% if top3_destinations_m | length > 0 %}
                 {% for i in range(top3_destinations_m | length) %}
-                <li>#{{ i + 1 }}: {{ top3_destinations_m[i]["airport_city"] }}</li>
+                <li>#{{ i + 1 }}: {{ top3_destinations_m[i][0] }}</li>
                 {% endfor %}
             {% else %}
                 <li>No Data Found!</li>
             {% endif %}
             {% if top3_destinations_m | length > 0 %}
                 {% for i in range(top3_destinations_m | length) %}
-                <li>#{{ i + 1 }}: {{ top3_destinations_m[i]["traffic_num"] }}</li>
+                <li>#{{ i + 1 }}: {{ top3_destinations_m[i][1] }}</li>
                 {% endfor %}
             {% else %}
                 <li>No Data Found!</li>
@@ -161,14 +161,14 @@
             </p>
             {% if top3_destinations_y | length > 0 %}
                 {% for i in range(top3_destinations_y | length) %}
-                <li>#{{ i + 1 }}: {{ top3_destinations_y[i]["airport_city"] }}</li>
+                <li>#{{ i + 1 }}: {{ top3_destinations_y[i][0] }}</li>
                 {% endfor %}
             {% else %}
                 <li>No Data Found!</li>
             {% endif %}
             {% if top3_destinations_y | length > 0 %}
                 {% for i in range(top3_destinations_y | length) %}
-                <li>#{{ i + 1 }}: {{ top3_destinations_y[i]["traffic_num"] }}</li>
+                <li>#{{ i + 1 }}: {{ top3_destinations_y[i][1] }}</li>
                 {% endfor %}
             {% else %}
                 <li>No Data Found!</li>
@@ -204,9 +204,9 @@
         var chart_type = "pie";
         var title1 = "Revenue comparison in the past year";
         var title2 = "Revenue comparison in the past month";
-        var annually_indirect = {{ annually_indirect - monthly_indirect }};
+        var annually_indirect = {{ annually_indirect }};
         var monthly_indirect = {{ monthly_indirect }};
-        var annually_direct = {{ annually_direct - monthly_direct }};
+        var annually_direct = {{ annually_direct  }};
         var monthly_direct = {{ monthly_direct }};
     </script>
 
